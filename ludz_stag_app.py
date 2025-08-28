@@ -137,27 +137,49 @@ with tab3:
     st.write("Select a participant and a tier to randomise a forfeit.")
 
     tier1 = [
-        "Do a Shot", "Down Your Drink", "Empty Hand",
-        "The Bitter Swap", "Burden of Coin", "Tongue of Strangers"
+        {"title": "The Whisper of Glass", "description": "Do a shot. The group chooses what."},
+        {"title": "The Empty Hand", "description": "Pour your drink out. You stay dry until the next bar."},
+        {"title": "The Bitter Swap", "description": "Swap drinks with someone else, even if it’s half-finished."},
+        {"title": "The Burden of Coin", "description": "Buy a round for two random people in the group."},
+        {"title": "The Tongue of Strangers", "description": "Speak only in German until your next drink arrives. Fail, and drink again."}
     ]
+
     tier2 = [
-        "Crown of Fools", "The Tangled Path", "The Shackled Bond",
-        "Servant’s Load", "Herald of Kings", "High-Five Herald", "Voice of the Silver Screen"
+        {"title": "The Crown of Fools", "description": "Wear a stupid hat, glasses, or accessory the group provides."},
+        {"title": "The Shackled Bond", "description": "Be handcuffed (or tied) to another member of the group for 20 minutes."},
+        {"title": "The Tangled Path", "description": "Tie your shoelaces together until the next bar."},
+        {"title": "The Servant’s Load", "description": "Carry the stag’s shoes in your hands until the next venue."},
+        {"title": "The Herald of Kings", "description": "Introduce yourself to the next bartender as 'The King of Bavaria.'"},
+        {"title": "The High-Five Herald", "description": "Stand outside the next bar and get strangers to high-five you before you’re allowed in."},
+        {"title": "The Voice of the Silver Screen", "description": "Speak only in movie quotes for 10 minutes."}
     ]
+
     tier3 = [
-        "Trial by Fire", "Trial by Water", "Trial by Earth", "Trial by Air"
+        {"title": "Trial by Fire", "description": "Eat a ghost pepper or insanely hot wing. No drink for 2 minutes."},
+        {"title": "Trial by Water", "description": "Down a pint of water while the group pours more liquid on you."},
+        {"title": "Trial by Earth", "description": "Lick something grim but safe (classic: someone’s armpit). Outdoors? Eat a handful of grass."},
+        {"title": "Trial by Air", "description": "Stand on a chair or table and give a dramatic toast in your best Shakespearean voice."}
     ]
 
     tiers = {"Tier 1": tier1, "Tier 2": tier2, "Tier 3": tier3}
 
-    participant_name = st.selectbox("Select Participant for Forfeit", participant_names)
+    participant_name = st.selectbox("Select Participant for Forfeit", [p['name'] for p in participants])
     tier_choice = st.selectbox("Select Tier", list(tiers.keys()))
 
     if st.button("Randomise Forfeit"):
         choice = random.choice(tiers[tier_choice])
-        st.info(f"{participant_name} must do: {choice}")
+        full_text = f"{choice['title']}: {choice['description']}"
+        st.success(f"{participant_name} must do: {full_text}")
+
+        # Find the participant ID
         pid = next(p["id"] for p in participants if p["name"] == participant_name)
-        add_forfeit(pid, choice, tier_choice)
+        
+        # Store in Supabase
+        add_forfeit(pid, full_text, tier_choice)
+
+        # Confirmation display
+        st.write(f"**Forfeit Recorded:** {participant_name} → {full_text} ({tier_choice})")
+
 
 # -------------------- HISTORY TAB --------------------
 with tab4:
@@ -180,4 +202,5 @@ with tab4:
                 st.write(f"- {c['description']}")
         else:
             st.write("None yet.")
+
 
