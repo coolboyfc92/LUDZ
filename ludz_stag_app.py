@@ -7,6 +7,30 @@ SUPABASE_URL = st.secrets["SUPABASE_URL"]
 SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+# -------------------- BAVARIAN BACKGROUND --------------------
+st.markdown(
+    """
+    <style>
+    /* Full page Bavarian diamond background */
+    .stApp {
+        background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Bavarian_flag.svg/1200px-Bavarian_flag.svg.png');
+        background-size: cover;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+        background-position: center;
+        opacity: 0.3;
+    }
+
+    /* Optional: give main content a slight white overlay for readability */
+    .main .block-container {
+        background-color: rgba(255, 255, 255, 0.85);
+        padding: 2rem;
+        border-radius: 10px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # -------------------- APP HEADER --------------------
 st.set_page_config(page_title="Lüdz – München wird niedergestochen", layout="wide")
@@ -173,3 +197,4 @@ with tab4:
                     st.markdown(f"- {c['description']}")
             else:
                 st.write("None yet.")
+
