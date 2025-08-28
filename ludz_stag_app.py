@@ -3,9 +3,9 @@ import random
 from supabase import create_client, Client
 
 # -------------------- SUPABASE SETUP --------------------
-# Make sure to set these in Streamlit secrets
-SUPABASE_URL = st.secrets["connections"]["supabase"]["SUPABASE_URL"]
-SUPABASE_KEY = st.secrets["connections"]["supabase"]["SUPABASE_KEY"]
+# Streamlit Cloud secrets must be flat keys
+SUPABASE_URL = st.secrets["SUPABASE_URL"]
+SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
@@ -144,3 +144,4 @@ with tab4:
                 st.write(f"- {c['description']}")
         else:
             st.write("None yet.")
+
