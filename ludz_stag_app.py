@@ -77,9 +77,36 @@ tab1, tab2, tab3, tab4 = st.tabs(["Home", "Drinking Games", "Forfeits", "History
 # -------------------- HOME TAB --------------------
 with tab1:
     st.header("Welcome to the Stag Do")
+    
+    st.subheader("Stag Night Rulebook")
+    st.markdown("""
+    **Main Rules**
+    
+    - **Code Names Only:** Everyone must pick a code name at the start of the night. If you use a real name, you take a forfeit sip.
+    - **Foreign Drinks Rule:** Drinks may only be referred to in a foreign language. If you say 'beer' in English, sip as a penalty.
+    - **Stag’s Word is Law:** The groom can invent a rule at any point, lasting only 30 minutes. Breaking it results in a sip.
+    - **The Banned Word Game:** Pick a word that cannot be said all night. Whoever slips must sip.
+    - **Left-Hand Rule:** Drinks must only be held in the left hand. If caught using the right hand, sip.
+    - **Story Chain:** Begin a made-up story about how you all know each other. Each person adds one sentence when asked. Forgetting or breaking character means a sip.
+    - **Silent Cheers:** Every toast must be silent, with only eye contact and clinking glasses. If someone speaks, they sip.
+    """)
+    
+    st.subheader("Hourly Dice Challenges")
+    st.markdown("""
+    Roll a six-sided dice each hour to determine a random challenge:
+
+    1. **Mystery Round:** One person secretly orders a random drink for another (bartender’s choice).
+    2. **Lost in Translation:** One person orders the next round using mime only.
+    3. **Accent Round:** Everyone speaks in the same accent for one drink.
+    4. **The Stag’s Shadow:** Copy the groom’s body language for 10 minutes.
+    5. **Silent Selfie:** Take a group photo in silence. Laugh/speak → drink.
+    6. **Cheers in Foreign:** Pick a language and use it for the next toast.
+    """)
+
     st.subheader("Participants & Code Names")
     for p in sorted(participants, key=lambda x: x['codename']):
         st.write(f"{p['name']} → {p['codename']}")
+
 
 # -------------------- DRINKING GAMES TAB --------------------
 with tab2:
@@ -153,3 +180,4 @@ with tab4:
                 st.write(f"- {c['description']}")
         else:
             st.write("None yet.")
+
