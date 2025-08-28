@@ -3,7 +3,6 @@ import random
 from supabase import create_client, Client
 
 # -------------------- SUPABASE SETUP --------------------
-# Streamlit Cloud secrets must be flat keys
 SUPABASE_URL = st.secrets["SUPABASE_URL"]
 SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
 
@@ -11,7 +10,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # -------------------- APP HEADER --------------------
 st.set_page_config(page_title="Lüdz – München wird niedergestochen", layout="wide")
-st.title("Lüdz")
+st.title("🍺 Lüdz")
 st.subheader("München wird niedergestochen")
 st.image(
     "https://scontent.fgla3-2.fna.fbcdn.net/v/t1.6435-9/82188351_10157905977513209_914144228009836544_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=2285d6&_nc_ohc=8O4HayFb4yMQ7kNvwGzbJd1&_nc_oc=AdnhH9iqNukXmPHkCY2ZmUWO65mN5zi_K8nrenyqlQ6wNqxTZd4V5La3B6pvW90UT20eZ_YTE7ANi1G-BXQ5siZO&_nc_zt=23&_nc_ht=scontent.fgla3-2.fna&_nc_gid=YbVcWtb7-j1WZarS-kHLMg&oh=00_AfVkCw2OCrt-i97EcySIjtgfynQsxRva2J7Z-SSjW4wmLw&oe=68CBD10E",
@@ -22,6 +21,9 @@ st.image(
 def get_participants():
     response = supabase.table("participants").select("*").execute()
     return response.data if response.data else []
+
+def add_participant(name, codename):
+    supabase.table("participants").insert({"name": name, "codename": codename}).execute()
 
 def add_forfeit(participant_id, description, tier):
     supabase.table("forfeits_done").insert({
@@ -45,73 +47,51 @@ def get_challenges(participant_id):
     return response.data
 
 # -------------------- PARTICIPANT SETUP --------------------
-st.sidebar.header("Add Participants with Custom Codenames")
-
-# Multi-line input: one participant per line in format "Name | Codename"
+st.sidebar.header("🍻 Add Participants with Custom Codenames")
 participants_input = st.sidebar.text_area(
     "Enter participants and codenames (Name | Codename)", ""
 ).splitlines()
 
 if st.sidebar.button("Add Participants"):
-    participants = get_participants()
-    existing_names = [p["name"] for p in participants]
-    existing_codenames = [p["codename"] for p in participants]
-
     for line in participants_input:
         if "|" in line:
             name, codename = [x.strip() for x in line.split("|", 1)]
             if name and codename:
-                if name in existing_names or codename in existing_codenames:
-                    st.warning(f"{name} or {codename} already exists!")
-                else:
-                    supabase.table("participants").insert({"name": name, "codename": codename}).execute()
+                add_participant(name, codename)
     st.sidebar.success("Participants added!")
 
-# Fetch all participants
+# Fetch participants
 participants = get_participants()
 participant_names = [p["name"] for p in participants]
 
 # -------------------- TABS --------------------
-tab1, tab2, tab3, tab4 = st.tabs(["Home", "Drinking Games", "Forfeits", "History"])
+tab1, tab2, tab3, tab4 = st.tabs(["🏠 Home", "🥨 Drinking Games", "⚔️ Forfeits", "📜 History"])
 
 # -------------------- HOME TAB --------------------
 with tab1:
-    st.header("Welcome to the Stag Do")
-    
-    st.subheader("Stag Night Rulebook")
-    st.markdown("""
-    **Main Rules**
-    
-    - **Code Names Only:** Everyone must pick a code name at the start of the night. If you use a real name, you take a forfeit sip.
-    - **Foreign Drinks Rule:** Drinks may only be referred to in a foreign language. If you say 'beer' in English, sip as a penalty.
-    - **Stag’s Word is Law:** The groom can invent a rule at any point, lasting only 30 minutes. Breaking it results in a sip.
-    - **The Banned Word Game:** Pick a word that cannot be said all night. Whoever slips must sip.
-    - **Left-Hand Rule:** Drinks must only be held in the left hand. If caught using the right hand, sip.
-    - **Story Chain:** Begin a made-up story about how you all know each other. Each person adds one sentence when asked. Forgetting or breaking character means a sip.
-    - **Silent Cheers:** Every toast must be silent, with only eye contact and clinking glasses. If someone speaks, they sip.
-    """)
-    
-    st.subheader("Hourly Dice Challenges")
-    st.markdown("""
-    Roll a six-sided dice each hour to determine a random challenge:
-
-    1. **Mystery Round:** One person secretly orders a random drink for another (bartender’s choice).
-    2. **Lost in Translation:** One person orders the next round using mime only.
-    3. **Accent Round:** Everyone speaks in the same accent for one drink.
-    4. **The Stag’s Shadow:** Copy the groom’s body language for 10 minutes.
-    5. **Silent Selfie:** Take a group photo in silence. Laugh/speak → drink.
-    6. **Cheers in Foreign:** Pick a language and use it for the next toast.
-    """)
-
-    st.subheader("Participants & Code Names")
+    st.header("🍺 Willkommen zum Stag Night!")
+    st.subheader("Teilnehmer & Codenamen")
     for p in sorted(participants, key=lambda x: x['codename']):
-        st.write(f"{p['name']} → {p['codename']}")
-
+        st.write(f"{p['name']} → **{p['codename']}**")
+    
+    st.markdown("---")
+    st.header("📖 Stag Night Rulebook")
+    st.markdown("""
+**Main Rules**
+- **Code Names Only:** Everyone must pick a codename. Using a real name = sip penalty.
+- **Foreign Drinks Rule:** Drinks must be referred to in a foreign language. Break = sip.
+- **Stag’s Word is Law:** Groom can invent a 30-min rule. Break = sip.
+- **The Banned Word Game:** Pick a word for the night. Slip = sip.
+- **Left-Hand Rule:** Drinks in left hand only. Right hand = sip.
+- **Story Chain:** Build a story together; break character = sip.
+- **Silent Cheers:** All toasts are silent; speaking = sip.
+- """)
+    st.markdown("Hourly challenges are rolled in the Drinking Games tab. 🍻")
 
 # -------------------- DRINKING GAMES TAB --------------------
 with tab2:
-    st.header("Hourly Challenges")
-    st.write("Roll a six-sided dice to get a random hourly challenge.")
+    st.header("🕰️ Hourly Challenges")
+    st.write("Roll a dice to assign a random challenge for a participant.")
 
     dice_challenges = {
         1: "Mystery Round: One person secretly orders a random drink for another (bartender’s choice).",
@@ -126,81 +106,70 @@ with tab2:
     if st.button("Roll Dice for Challenge"):
         roll = random.randint(1, 6)
         challenge = dice_challenges[roll]
-        st.success(f"Dice rolled: {roll}")
-        st.info(f"{participant_name} must do: {challenge}")
+        st.success(f"🎲 Dice rolled: {roll}")
+        st.info(f"**{participant_name}** must do: {challenge}")
         pid = next(p["id"] for p in participants if p["name"] == participant_name)
         add_challenge(pid, challenge)
 
 # -------------------- FORFEITS TAB --------------------
 with tab3:
-    st.header("Forfeit Randomiser")
-    st.write("Select a participant and a tier to randomise a forfeit.")
+    st.header("⚔️ Forfeit Randomiser")
+    st.write("Select a participant and tier to assign a forfeit.")
 
-    tier1 = [
-        {"title": "The Whisper of Glass", "description": "Do a shot. The group chooses what."},
-        {"title": "The Empty Hand", "description": "Pour your drink out. You stay dry until the next bar."},
-        {"title": "The Bitter Swap", "description": "Swap drinks with someone else, even if it’s half-finished."},
-        {"title": "The Burden of Coin", "description": "Buy a round for two random people in the group."},
-        {"title": "The Tongue of Strangers", "description": "Speak only in German until your next drink arrives. Fail, and drink again."}
-    ]
+    tier1 = {
+        "The Whisper of Glass": "Do a shot. The group chooses what.",
+        "The Empty Hand": "Pour your drink out. You stay dry until the next bar.",
+        "The Bitter Swap": "Swap drinks with someone else, even if half-finished.",
+        "The Burden of Coin": "Buy a round for two random people in the group.",
+        "The Tongue of Strangers": "Speak only in German until your next drink arrives. Fail, drink again."
+    }
+    tier2 = {
+        "The Crown of Fools": "Wear a stupid hat, glasses, or accessory the group provides.",
+        "The Shackled Bond": "Be handcuffed (or tied) to another member for 20 minutes.",
+        "The Tangled Path": "Tie your shoelaces together until the next bar.",
+        "The Servant’s Load": "Carry the stag’s shoes in your hands until the next venue.",
+        "The Herald of Kings": "Introduce yourself to the next bartender as 'The King of Bavaria.'",
+        "The High-Five Herald": "Get strangers to high-five you outside the next bar.",
+        "The Voice of the Silver Screen": "Speak only in movie quotes for 10 minutes."
+    }
+    tier3 = {
+        "Trial by Fire": "Eat a ghost pepper or insanely hot wing. No drink for 2 minutes.",
+        "Trial by Water": "Down a pint of water while the group pours more on you.",
+        "Trial by Earth": "Lick something grim but safe (classic: armpit). Outdoors? Eat a handful of grass.",
+        "Trial by Air": "Stand on a chair or table and give a dramatic toast in your best Shakespearean voice."
+    }
 
-    tier2 = [
-        {"title": "The Crown of Fools", "description": "Wear a stupid hat, glasses, or accessory the group provides."},
-        {"title": "The Shackled Bond", "description": "Be handcuffed (or tied) to another member of the group for 20 minutes."},
-        {"title": "The Tangled Path", "description": "Tie your shoelaces together until the next bar."},
-        {"title": "The Servant’s Load", "description": "Carry the stag’s shoes in your hands until the next venue."},
-        {"title": "The Herald of Kings", "description": "Introduce yourself to the next bartender as 'The King of Bavaria.'"},
-        {"title": "The High-Five Herald", "description": "Stand outside the next bar and get strangers to high-five you before you’re allowed in."},
-        {"title": "The Voice of the Silver Screen", "description": "Speak only in movie quotes for 10 minutes."}
-    ]
+    tiers = {"Tier 1 — Light": tier1, "Tier 2 — Medium": tier2, "Tier 3 — Trials": tier3}
 
-    tier3 = [
-        {"title": "Trial by Fire", "description": "Eat a ghost pepper or insanely hot wing. No drink for 2 minutes."},
-        {"title": "Trial by Water", "description": "Down a pint of water while the group pours more liquid on you."},
-        {"title": "Trial by Earth", "description": "Lick something grim but safe (classic: someone’s armpit). Outdoors? Eat a handful of grass."},
-        {"title": "Trial by Air", "description": "Stand on a chair or table and give a dramatic toast in your best Shakespearean voice."}
-    ]
-
-    tiers = {"Tier 1": tier1, "Tier 2": tier2, "Tier 3": tier3}
-
-    participant_name = st.selectbox("Select Participant for Forfeit", [p['name'] for p in participants])
+    participant_name = st.selectbox("Select Participant for Forfeit", participant_names)
     tier_choice = st.selectbox("Select Tier", list(tiers.keys()))
 
     if st.button("Randomise Forfeit"):
-        choice = random.choice(tiers[tier_choice])
-        full_text = f"{choice['title']}: {choice['description']}"
-        st.success(f"{participant_name} must do: {full_text}")
-
-        # Find the participant ID
+        name, desc = random.choice(list(tiers[tier_choice].items()))
+        st.warning(f"**{participant_name} must do: {name}**")
+        st.info(desc)
         pid = next(p["id"] for p in participants if p["name"] == participant_name)
-        
-        # Store in Supabase
-        add_forfeit(pid, full_text, tier_choice)
-
-        # Confirmation display
-        st.write(f"**Forfeit Recorded:** {participant_name} → {full_text} ({tier_choice})")
-
+        add_forfeit(pid, f"{name}: {desc}", tier_choice)
 
 # -------------------- HISTORY TAB --------------------
 with tab4:
-    st.header("Participant History")
+    st.header("📜 Participant History")
     st.write("See all challenges and forfeits completed by each participant.")
 
     for p in participants:
-        st.subheader(f"{p['codename']} ({p['name']})")
-        st.write("**Forfeits Done:**")
-        forfeits = get_forfeits(p["id"])
-        if forfeits:
-            for f in forfeits:
-                st.write(f"- {f['description']} ({f['tier']})")
-        else:
-            st.write("None yet.")
-        st.write("**Challenges Completed:**")
-        challenges = get_challenges(p["id"])
-        if challenges:
-            for c in challenges:
-                st.write(f"- {c['description']}")
-        else:
-            st.write("None yet.")
+        with st.expander(f"{p['codename']} ({p['name']})"):
+            st.markdown("**Forfeits Done:**")
+            forfeits = get_forfeits(p["id"])
+            if forfeits:
+                for f in forfeits:
+                    st.markdown(f"- **{f['description'].split(':')[0]}**: {':'.join(f['description'].split(':')[1:])} ({f['tier']})")
+            else:
+                st.write("None yet.")
 
-
+            st.markdown("**Challenges Completed:**")
+            challenges = get_challenges(p["id"])
+            if challenges:
+                for c in challenges:
+                    st.markdown(f"- {c['description']}")
+            else:
+                st.write("None yet.")
