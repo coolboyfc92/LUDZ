@@ -7,23 +7,28 @@ SUPABASE_URL = st.secrets["SUPABASE_URL"]
 SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-# -------------------- BAVARIAN BACKGROUND --------------------
+## -------------------- BAVARIAN BACKGROUND --------------------
 st.markdown(
     """
     <style>
-    /* Full page Bavarian diamond background */
-    .stApp {
+    /* Add background to the entire page using a pseudo-element */
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
         background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Bavarian_flag.svg/1200px-Bavarian_flag.svg.png');
         background-size: cover;
-        background-attachment: fixed;
-        background-repeat: no-repeat;
-        background-position: center;
-        opacity: 0.3;
+        background-repeat: repeat;
+        opacity: 0.2; /* Adjust for subtlety */
+        z-index: -1; /* Behind everything */
     }
 
-    /* Optional: give main content a slight white overlay for readability */
+    /* Optional: make main content background slightly opaque for readability */
     .main .block-container {
-        background-color: rgba(255, 255, 255, 0.85);
+        background-color: rgba(255, 255, 255, 0.9);
         padding: 2rem;
         border-radius: 10px;
     }
@@ -197,4 +202,5 @@ with tab4:
                     st.markdown(f"- {c['description']}")
             else:
                 st.write("None yet.")
+
 
