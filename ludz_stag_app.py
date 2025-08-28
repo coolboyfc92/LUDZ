@@ -23,11 +23,6 @@ def get_participants():
     response = supabase.table("participants").select("*").execute()
     return response.data if response.data else []
 
-def add_participant(name):
-    participants = get_participants()
-    code_name = f"Agent {len(participants) + 1}"
-    supabase.table("participants").insert({"name": name, "codename": code_name}).execute()
-
 def add_forfeit(participant_id, description, tier):
     supabase.table("forfeits_done").insert({
         "participant_id": participant_id,
@@ -50,15 +45,29 @@ def get_challenges(participant_id):
     return response.data
 
 # -------------------- PARTICIPANT SETUP --------------------
-st.sidebar.header("Participant Setup")
-new_participants = st.sidebar.text_area("Enter participant names, one per line", "").splitlines()
+st.sidebar.header("Add Participants with Custom Codenames")
+
+# Multi-line input: one participant per line in format "Name | Codename"
+participants_input = st.sidebar.text_area(
+    "Enter participants and codenames (Name | Codename)", ""
+).splitlines()
 
 if st.sidebar.button("Add Participants"):
-    for p in new_participants:
-        if p:
-            add_participant(p)
+    participants = get_participants()
+    existing_names = [p["name"] for p in participants]
+    existing_codenames = [p["codename"] for p in participants]
+
+    for line in participants_input:
+        if "|" in line:
+            name, codename = [x.strip() for x in line.split("|", 1)]
+            if name and codename:
+                if name in existing_names or codename in existing_codenames:
+                    st.warning(f"{name} or {codename} already exists!")
+                else:
+                    supabase.table("participants").insert({"name": name, "codename": codename}).execute()
     st.sidebar.success("Participants added!")
 
+# Fetch all participants
 participants = get_participants()
 participant_names = [p["name"] for p in participants]
 
@@ -69,7 +78,7 @@ tab1, tab2, tab3, tab4 = st.tabs(["Home", "Drinking Games", "Forfeits", "History
 with tab1:
     st.header("Welcome to the Stag Do")
     st.subheader("Participants & Code Names")
-    for p in participants:
+    for p in sorted(participants, key=lambda x: x['codename']):
         st.write(f"{p['name']} → {p['codename']}")
 
 # -------------------- DRINKING GAMES TAB --------------------
@@ -144,4 +153,3 @@ with tab4:
                 st.write(f"- {c['description']}")
         else:
             st.write("None yet.")
-
