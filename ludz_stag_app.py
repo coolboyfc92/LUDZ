@@ -53,12 +53,14 @@ st.markdown(
         border-radius: 5px;
         padding: 0.4rem 0.8rem;
         margin: 0 0.2rem;
+        color: #000000 !important; /* black text for tabs */
     }
 
     /* Selected tab */
     div[role="tab"][aria-selected="true"] {
         background-color: rgba(255, 255, 255, 0.4) !important;
         font-weight: bold;
+        color: #000000 !important; /* ensure selected tab text is black */
     }
 
     /* Tab content panels */
@@ -362,6 +364,7 @@ with tab6:
             st.write(f"**{codename}**: {score} points")
     else:
         st.write("No participants yet.")
+
 
 
 
