@@ -12,10 +12,10 @@ st.markdown(
     """
     <style>
     .stApp {
-        background-image: url("https://i.postimg.cc/sgGGw8zW/124273818-3862144150464817-4969867150395063431-n.jpg");
+        background-image: url("https://www.nationalflaggen.de/flaggen-shop/media/2d/0f/f6/1665859289/12e3bf1592aba0fef67348db8a6ad2cb4d54e42b.jpg");
         background-size: cover;
         background-repeat: repeat;
-        background-attachment: fixed;
+        background-attachment: scroll;  /* ✅ makes it move with the page */
     }
 
     .main .block-container {
@@ -27,7 +27,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
 # -------------------- APP HEADER --------------------
 st.set_page_config(page_title="Lüdz – München wird niedergestochen", layout="wide")
 st.title("🍺 Lüdz")
@@ -193,6 +192,7 @@ with tab4:
                     st.markdown(f"- {c['description']}")
             else:
                 st.write("None yet.")
+
 
 
 
