@@ -11,65 +11,58 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 st.markdown(
     """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Almendra&display=swap');
-
-    /* App background image */
+    /* Background image for the whole app */
     .stApp {
-        background-image: url('https://static.vecteezy.com/system/resources/previews/053/232/428/non_2x/the-flag-of-the-city-of-munich-germany-vector.jpg');
+        background-image: url("https://static.vecteezy.com/system/resources/previews/053/232/428/non_2x/the-flag-of-the-city-of-munich-germany-vector.jpg");
         background-size: cover;
+        background-repeat: repeat;
         background-attachment: fixed;
-        font-family: 'Almendra', serif !important;
     }
 
-    /* Main content blocks */
-    .stBlock, .stMarkdown > div {
-        background-color: rgba(255, 255, 255, 0.65) !important;  /* 65% transparent white */
-        padding: 12px 18px !important;
-        border-radius: 12px !important;
-        color: #000000 !important;
-        display: block !important;
-        margin-bottom: 12px !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    /* Main page container with semi-transparent white box */
+    .stApp > .main {
+        background-color: rgba(255, 255, 255, 0.2); /* 20% opacity */
+        padding: 2rem;
+        border-radius: 10px;
     }
 
-    /* Headings inside markdown */
-    .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, 
-    .stMarkdown h4, .stMarkdown h5, .stMarkdown h6 {
-        background-color: rgba(255,255,255,0.7) !important;
-        color: #000000 !important;
-        padding: 10px 16px !important;
-        border-radius: 10px !important;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
-        display: inline-block !important;
-        margin-bottom: 8px !important;
-    }
-
-    /* Sidebar */
-    [data-testid="stSidebar"] {
-        background-color: rgba(255,255,255,0.65) !important;
-        padding: 12px !important;
-        border-radius: 12px !important;
-        font-family: 'Almendra', serif !important;
-        color: #000000 !important;
-        backdrop-filter: blur(5px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-        border: 1px solid rgba(0,0,0,0.15);
-    }
-
-    /* Tab headers / navigation bar */
-    .css-1r6slb0, .css-1emrehy {  /* Streamlit tab bar containers */
-        background-color: rgba(255, 255, 255, 0.65) !important;
-        color: #000000 !important;
-        border-radius: 12px !important;
-        font-family: 'Almendra', serif !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        padding: 6px 12px !important;
-    }
-
-    .css-1emrehy button {
+    /* All text inside main container black for contrast */
+    .stApp .main * {
         color: #000000 !important;
         font-family: 'Almendra', serif !important;
     }
+
+    /* Tab headers container */
+    div[role="tablist"] {
+        background-color: rgba(255, 255, 255, 0.2) !important; /* same 20% opacity */
+        border-radius: 8px;
+        padding: 0.3rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Individual tab buttons */
+    div[role="tab"] {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        border-radius: 5px;
+        padding: 0.4rem 0.8rem;
+        margin: 0 0.2rem;
+    }
+
+    /* Ensure selected tab is readable */
+    div[role="tab"][aria-selected="true"] {
+        background-color: rgba(255, 255, 255, 0.4) !important;
+        font-weight: bold;
+    }
+
+    /* Sidebar container */
+    .css-1d391kg {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        padding: 1rem;
+        border-radius: 10px;
+        font-family: 'Almendra', serif !important;
+        color: #000000 !important;
+    }
+
     </style>
     """,
     unsafe_allow_html=True
@@ -354,6 +347,7 @@ with tab6:
             st.write(f"**{codename}**: {score} points")
     else:
         st.write("No participants yet.")
+
 
 
 
