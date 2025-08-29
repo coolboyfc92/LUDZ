@@ -29,26 +29,36 @@ st.markdown(
         padding: 2rem;
         border-radius: 14px;
         color: #000000; /* black text */
-        backdrop-filter: blur(5px); /* soft blur for readability */
-        box-shadow: 0 8px 20px rgba(0,0,0,0.3); /* subtle shadow */
-        border: 2px solid rgba(0,0,0,0.2); /* playful border */
+        backdrop-filter: blur(5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        border: 2px solid rgba(0,0,0,0.2);
     }
 
-    /* Text blocks (headings, paragraphs, markdown) */
+    /* Headings with darker semi-transparent banner */
+    .stApp .main h1,
+    .stApp .main h2,
+    .stApp .main h3,
+    .stApp .main h4,
+    .stApp .main h5,
+    .stApp .main h6 {
+        background-color: rgba(0, 0, 0, 0.25); /* darker for headings */
+        padding: 0.8rem 1.5rem;
+        border-radius: 10px;
+        color: #000000 !important;
+        text-shadow: 1px 1px 2px rgba(255,255,255,0.6);
+        display: inline-block;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Paragraphs and markdown blocks */
     .stApp .main p, 
-    .stApp .main h1, 
-    .stApp .main h2, 
-    .stApp .main h3, 
-    .stApp .main h4, 
-    .stApp .main h5, 
-    .stApp .main h6, 
     .stApp .main div.stMarkdown {
         background-color: rgba(255, 255, 255, 0.2);
         padding: 0.6rem 1.2rem;
         border-radius: 8px;
         display: inline-block;
         color: #000000 !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2); /* subtle shadow for text boxes */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         border: 1px solid rgba(0,0,0,0.15);
     }
 
@@ -359,6 +369,7 @@ with tab6:
             st.write(f"**{codename}**: {score} points")
     else:
         st.write("No participants yet.")
+
 
 
 
