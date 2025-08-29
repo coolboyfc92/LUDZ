@@ -5,21 +5,41 @@ from supabase import create_client, Client
 # -------------------- SUPABASE SETUP --------------------
 SUPABASE_URL = st.secrets["SUPABASE_URL"]
 SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
-
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-## -------------------- BAVARIAN BACKGROUND --------------------
+
+# -------------------- BAVARIAN BACKGROUND --------------------
 st.markdown(
     """
     <style>
-    .stApp {
-        background-image: url("https://www.nationalflaggen.de/flaggen-shop/media/2d/0f/f6/1665859289/12e3bf1592aba0fef67348db8a6ad2cb4d54e42b.jpg");
+    /* Background image */
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('https://i.postimg.cc/sgGGw8zW/124273818-3862144150464817-4969867150395063431-n.jpg');
         background-size: cover;
         background-repeat: repeat;
-        background-attachment: scroll;  /* ✅ makes it move with the page */
+        z-index: -2;
     }
 
+    /* Dark overlay for readability */
+    body::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: -1;
+    }
+
+    /* Main container styling */
     .main .block-container {
-        background-color: rgba(255, 255, 255, 0.9);
+        background-color: rgba(255, 255, 255, 0.85);
         padding: 2rem;
         border-radius: 10px;
     }
@@ -27,6 +47,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
 # -------------------- APP HEADER --------------------
 st.set_page_config(page_title="Lüdz – München wird niedergestochen", layout="wide")
 st.title("🍺 Lüdz")
@@ -41,47 +62,59 @@ def get_participants():
     response = supabase.table("participants").select("*").execute()
     return response.data if response.data else []
 
+def get_pubs():
+    response = supabase.table("pubs").select("*").execute()
+    return response.data if response.data else []
+
 def add_participant(name, codename):
     supabase.table("participants").insert({"name": name, "codename": codename}).execute()
 
-def add_forfeit(participant_id, description, tier):
+def add_forfeit(participant_id, description, tier, pub_id=None):
     supabase.table("forfeits_done").insert({
         "participant_id": participant_id,
         "description": description,
-        "tier": tier
+        "tier": tier,
+        "pub_id": pub_id
     }).execute()
 
-def add_challenge(participant_id, description):
+def add_challenge(participant_id, description, pub_id=None):
     supabase.table("challenges_done").insert({
         "participant_id": participant_id,
-        "description": description
+        "description": description,
+        "pub_id": pub_id
     }).execute()
 
-def get_forfeits(participant_id):
-    response = supabase.table("forfeits_done").select("*").eq("participant_id", participant_id).execute()
-    return response.data
+def get_forfeits(participant_id, pub_id=None):
+    q = supabase.table("forfeits_done").select("*").eq("participant_id", participant_id)
+    if pub_id is not None:
+        q = q.eq("pub_id", pub_id)
+    return q.execute().data or []
 
-def get_challenges(participant_id):
-    response = supabase.table("challenges_done").select("*").eq("participant_id", participant_id).execute()
-    return response.data
+def get_challenges(participant_id, pub_id=None):
+    q = supabase.table("challenges_done").select("*").eq("participant_id", participant_id)
+    if pub_id is not None:
+        q = q.eq("pub_id", pub_id)
+    return q.execute().data or []
 
 # -------------------- PARTICIPANT SETUP --------------------
 st.sidebar.header("🍻 Add Participants with Custom Codenames")
 participants_input = st.sidebar.text_area(
-    "Enter participants and codenames (Name | Codename)", ""
+    "Enter participants and codenames (Name ; Codename)", ""
 ).splitlines()
 
 if st.sidebar.button("Add Participants"):
     for line in participants_input:
-        if "|" in line:
-            name, codename = [x.strip() for x in line.split("|", 1)]
+        if ";" in line:
+            name, codename = [x.strip() for x in line.split(";", 1)]
             if name and codename:
                 add_participant(name, codename)
     st.sidebar.success("Participants added!")
 
-# Fetch participants
+# Fetch participants and pubs
 participants = get_participants()
 participant_names = [p["name"] for p in participants]
+pubs = get_pubs()
+pub_names = [p["name"] for p in pubs]
 
 # -------------------- TABS --------------------
 tab1, tab2, tab3, tab4 = st.tabs(["🏠 Home", "🥨 Drinking Games", "⚔️ Forfeits", "📜 History"])
@@ -93,25 +126,39 @@ with tab1:
     for p in sorted(participants, key=lambda x: x['codename']):
         st.write(f"{p['name']} → **{p['codename']}**")
     
+    # -------------------- FORFEIT LEADERBOARD --------------------
     st.markdown("---")
-    st.header("📖 Stag Night Rulebook")
-    st.markdown("""
-**Main Rules**
-- **Code Names Only:** Everyone must pick a codename. Using a real name = sip penalty.
-- **Foreign Drinks Rule:** Drinks must be referred to in a foreign language. Break = sip.
-- **Stag’s Word is Law:** Groom can invent a 30-min rule. Break = sip.
-- **The Banned Word Game:** Pick a word for the night. Slip = sip.
-- **Left-Hand Rule:** Drinks in left hand only. Right hand = sip.
-- **Story Chain:** Build a story together; break character = sip.
-- **Silent Cheers:** All toasts are silent; speaking = sip.
-- """)
-    st.markdown("Hourly challenges are rolled in the Drinking Games tab. 🍻")
+    st.header("🏆 Forfeit Leaderboard")
+    tier_weights = {"Tier 1 — Light": 1, "Tier 2 — Medium": 3, "Tier 3 — Trials": 9}
+    leaderboard = []
+
+    for p in participants:
+        forfeits = get_forfeits(p["id"], None)
+        tier_counts = {"Tier 1 — Light": 0, "Tier 2 — Medium": 0, "Tier 3 — Trials": 0}
+        total_score = 0
+        if forfeits:
+            for f in forfeits:
+                tier = f.get("tier")
+                if tier in tier_counts:
+                    tier_counts[tier] += 1
+                    total_score += tier_weights[tier]
+        leaderboard.append({
+            "name": p["name"],
+            "codename": p["codename"],
+            "total_score": total_score,
+            **tier_counts
+        })
+    leaderboard = sorted(leaderboard, key=lambda x: x["total_score"], reverse=True)
+    st.table(leaderboard)
 
 # -------------------- DRINKING GAMES TAB --------------------
 with tab2:
-    st.header("🕰️ Hourly Challenges")
-    st.write("Roll a dice to assign a random challenge for a participant.")
+    st.header("🕰️ Pub Challenges")
+    st.write("Select a pub, then roll a dice to assign a random challenge for a participant.")
 
+    selected_pub_name = st.selectbox("Select Pub", pub_names)
+    pub_id = next(p["id"] for p in pubs if p["name"] == selected_pub_name)
+    
     dice_challenges = {
         1: "Mystery Round: One person secretly orders a random drink for another (bartender’s choice).",
         2: "Lost in Translation: One person orders the next round using mime only.",
@@ -128,12 +175,12 @@ with tab2:
         st.success(f"🎲 Dice rolled: {roll}")
         st.info(f"**{participant_name}** must do: {challenge}")
         pid = next(p["id"] for p in participants if p["name"] == participant_name)
-        add_challenge(pid, challenge)
+        add_challenge(pid, challenge, pub_id)
 
 # -------------------- FORFEITS TAB --------------------
 with tab3:
     st.header("⚔️ Forfeit Randomiser")
-    st.write("Select a participant and tier to assign a forfeit.")
+    st.write("Select a participant and tier to assign a forfeit (can choose pub).")
 
     tier1 = {
         "The Whisper of Glass": "Do a shot. The group chooses what.",
@@ -162,13 +209,15 @@ with tab3:
 
     participant_name = st.selectbox("Select Participant for Forfeit", participant_names)
     tier_choice = st.selectbox("Select Tier", list(tiers.keys()))
+    selected_pub_name_f = st.selectbox("Select Pub for Forfeit", pub_names)
+    pub_id_f = next(p["id"] for p in pubs if p["name"] == selected_pub_name_f)
 
     if st.button("Randomise Forfeit"):
         name, desc = random.choice(list(tiers[tier_choice].items()))
         st.warning(f"**{participant_name} must do: {name}**")
         st.info(desc)
         pid = next(p["id"] for p in participants if p["name"] == participant_name)
-        add_forfeit(pid, f"{name}: {desc}", tier_choice)
+        add_forfeit(pid, f"{name}: {desc}", tier_choice, pub_id_f)
 
 # -------------------- HISTORY TAB --------------------
 with tab4:
@@ -181,7 +230,13 @@ with tab4:
             forfeits = get_forfeits(p["id"])
             if forfeits:
                 for f in forfeits:
-                    st.markdown(f"- **{f['description'].split(':')[0]}**: {':'.join(f['description'].split(':')[1:])} ({f['tier']})")
+                    parts = f['description'].split(":", 1)
+                    if len(parts) == 2:
+                        title, detail = parts
+                        pub_name = next((x["name"] for x in pubs if x["id"] == f.get("pub_id")), "Not a Pub")
+                        st.markdown(f"- **{title.strip()}** ({pub_name}): {detail.strip()} ({f['tier']})")
+                    else:
+                        st.markdown(f"- {f['description']} ({f['tier']})")
             else:
                 st.write("None yet.")
 
@@ -189,11 +244,7 @@ with tab4:
             challenges = get_challenges(p["id"])
             if challenges:
                 for c in challenges:
-                    st.markdown(f"- {c['description']}")
+                    pub_name = next((x["name"] for x in pubs if x["id"] == c.get("pub_id")), "Not a Pub")
+                    st.markdown(f"- {c['description']} ({pub_name})")
             else:
                 st.write("None yet.")
-
-
-
-
-
