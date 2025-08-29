@@ -27,7 +27,7 @@ st.markdown(
         font-family: 'Almendra', serif !important;
     }
 
-    /* Force text color for common elements inside main */
+    /* Force text color for main elements */
     .stApp > .main p,
     .stApp > .main h1,
     .stApp > .main h2,
@@ -36,10 +36,10 @@ st.markdown(
     .stApp > .main h5,
     .stApp > .main h6,
     .stApp > .main div.stMarkdown {
-        color: #000000 !important; /* black text */
+        color: #000000 !important;
     }
 
-    /* Tab headers container */
+    /* Tab headers */
     div[role="tablist"] {
         background-color: rgba(255, 255, 255, 0.2) !important;
         border-radius: 8px;
@@ -47,29 +47,26 @@ st.markdown(
         margin-bottom: 1rem;
     }
 
-    /* Individual tab buttons */
     div[role="tab"] {
         background-color: rgba(255, 255, 255, 0.2) !important;
         border-radius: 5px;
         padding: 0.4rem 0.8rem;
         margin: 0 0.2rem;
-        color: #000000 !important; /* black text for tabs */
+        color: #000000 !important;
     }
 
-    /* Selected tab */
     div[role="tab"][aria-selected="true"] {
         background-color: rgba(255, 255, 255, 0.4) !important;
         font-weight: bold;
-        color: #000000 !important; /* ensure selected tab text is black */
+        color: #000000 !important;
     }
 
-    /* Tab content panels */
     div[role="tabpanel"] {
         background-color: rgba(255, 255, 255, 0.2) !important;
         border-radius: 10px;
         padding: 1rem;
         margin-top: 0.5rem;
-        color: #000000 !important; /* force black inside tab panels */
+        color: #000000 !important;
     }
 
     /* Sidebar */
@@ -78,7 +75,7 @@ st.markdown(
         padding: 1rem;
         border-radius: 10px;
         font-family: 'Almendra', serif !important;
-        color: #ffffff !important; /* white text in sidebar */
+        color: #ffffff !important;
     }
     </style>
     """,
@@ -107,7 +104,7 @@ def get_pubs():
     return resp.data if resp.data else []
 
 def add_pub(pub_name):
-    supabase.table("pubs").insert({"name": pub_name}).execute()
+    supabase.table("pubs").insert({"pub_name": pub_name}).execute()
 
 def get_pub_rules(pub_id):
     resp = supabase.table("pub_rules").select("*").eq("pub_id", pub_id).execute()
@@ -162,7 +159,7 @@ if st.sidebar.button("Add Pub"):
 participants = get_participants()
 participant_names = [p["name"] for p in participants]
 pubs = get_pubs()
-pub_names = [p["name"] for p in pubs]
+pub_names = [p["pub_name"] for p in pubs]
 
 # -------------------- TABS --------------------
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
@@ -180,17 +177,14 @@ with tab1:
     )
     st.markdown(home_text)
 
-    # Check if the Easter egg has already been solved
     egg_resp = supabase.table("easter_eggs").select("solved").eq("egg_name", "Level3Forfeit").execute()
     egg_solved = egg_resp.data[0]["solved"] if egg_resp.data else False
 
     if not egg_solved:
-        if st.button("🍺"):  # hidden trigger emoji
+        if st.button("🍺"):
             password_input = st.text_input("Enter the secret password")
             if password_input.upper() == "SCHOMILF69":
                 st.success("Easter egg unlocked! You can nominate someone for a Level 3 forfeit.")
-
-                # Mark the Easter egg as solved
                 if egg_resp.data:
                     supabase.table("easter_eggs").update({"solved": True}).eq("egg_name", "Level3Forfeit").execute()
                 else:
@@ -213,13 +207,11 @@ with tab1:
 # -------------------- PUB RULES TAB --------------------
 with tab2:
     st.header("📖 Pub Rules")
-    if pubs:  # Only show selectbox if pubs exist
+    if pubs:
         selected_pub = st.selectbox("Select a Pub", pub_names)
-        pub_item = next((p for p in pubs if p["name"] == selected_pub), None)
+        pub_item = next((p for p in pubs if p["pub_name"] == selected_pub), None)
         if pub_item:
             pub_id = pub_item["id"]
-
-            # Show existing rules
             rules = get_pub_rules(pub_id)
             if rules:
                 st.markdown("**Existing rules for this pub:**")
@@ -228,7 +220,6 @@ with tab2:
             else:
                 st.write("No rules applied yet for this pub.")
 
-            # Standard stag night rules
             standard_rules = [
                 "**Code Names Only:** Everyone must pick a codename. Using a real name = sip penalty.",
                 "**Foreign Drinks Rule:** Drinks must be referred to in a foreign language. Break = sip.",
@@ -251,138 +242,69 @@ with tab2:
 
 # -------------------- HOURLY CHALLENGES TAB --------------------
 with tab3:
-    st.header("🕰️ Hourly Challenges")
-    dice_challenges = {
-        1: "Mystery Round: One person secretly orders a random drink for another.",
-        2: "Lost in Translation: One person orders the next round using mime only.",
-        3: "Accent Round: Everyone speaks in the same accent for one drink.",
-        4: "The Stag’s Shadow: Copy the groom’s body language for 10 minutes.",
-        5: "Silent Selfie: Take a group photo in silence. Laugh/speak → drink.",
-        6: "Cheers in Foreign: Pick a language and use it for the next toast."
-    }
-
+    st.header("🥨 Hourly Challenges")
     if participants:
-        participant_name = st.selectbox("Select Participant", participant_names)
-        if st.button("Roll Dice for Challenge"):
-            roll = random.randint(1, 6)
-            challenge = dice_challenges[roll]
-            st.success(f"🎲 Dice rolled: {roll}")
-            st.info(f"**{participant_name}** must do: {challenge}")
-            pid = next(p["id"] for p in participants if p["name"] == participant_name)
-            add_challenge(pid, challenge)
+        chosen = st.selectbox("Select participant", participant_names, key="hourly_challenge")
+        if st.button("Roll Challenge"):
+            challenges = [
+                "Do a secret toast without anyone noticing",
+                "Perform a one-liner joke in the middle of the pub",
+                "Speak only in a Bavarian accent for 10 minutes",
+                "Order a drink in the weirdest foreign language you can",
+                "Nominate someone else for a sip penalty"
+            ]
+            challenge = random.choice(challenges)
+            st.info(f"Challenge for {chosen}: {challenge}")
+            add_challenge(next(p["id"] for p in participants if p["name"] == chosen), challenge)
     else:
-        st.write("Add participants first to roll challenges.")
+        st.write("Add participants first in the sidebar.")
 
 # -------------------- FORFEITS TAB --------------------
 with tab4:
-    st.header("⚔️ Forfeit Randomiser")
-    tier1 = {
-        "The Whisper of Glass": "Do a shot. The group chooses what.",
-        "Pints Out for Harambe": "Pour your drink out. You stay dry until the next bar.",
-        "The Bitter Swap": "Swap drinks with someone else, even if half-finished.",
-        "The Burden of Coin": "Buy a round for two random people in the group.",
-        "The Tongue of Strangers": "Speak only in German until your next drink arrives. Fail, drink again."
-    }
-    tier2 = {
-        "The Crown of Fools": "Wear a stupid hat, glasses, or accessory the group provides.",
-        "The Shackled Bond": "Be handcuffed (or tied) to another member for 20 minutes.",
-        "The Tangled Path": "Tie your shoelaces together until the next bar.",
-        "The Servant’s Load": "Carry the stag’s shoes in your hands until the next venue.",
-        "The Herald of Kings": "Introduce yourself to the next bartender as 'The King of Bavaria.'",
-        "The High-Five Herald": "Get strangers to high-five you outside the next bar.",
-        "The Voice of the Silver Screen": "Speak only in movie quotes for 10 minutes."
-    }
-    tier3 = {
-        "Trial by Fire": "Eat a ghost pepper or insanely hot wing. No drink for 2 minutes.",
-        "Trial by Water": "Down a pint of water while the group pours more on you.",
-        "Trial by Earth": "Lick something grim but safe (classic: armpit). Outdoors? Eat a handful of grass.",
-        "Trial by Air": "Stand on a chair or table and give a dramatic toast in your best Shakespearean voice."
-    }
-    tiers = {"Tier 1 — Light": tier1, "Tier 2 — Medium": tier2, "Tier 3 — Trials": tier3}
-
+    st.header("⚔️ Forfeits")
     if participants:
-        participant_name = st.selectbox("Select Participant for Forfeit", participant_names)
-        tier_choice = st.selectbox("Select Tier", list(tiers.keys()))
-        if st.button("Randomise Forfeit"):
-            name, desc = random.choice(list(tiers[tier_choice].items()))
-            st.warning(f"**{participant_name} must do: {name}**")
-            st.info(desc)
-            pid = next(p["id"] for p in participants if p["name"] == participant_name)
-            add_forfeit(pid, f"{name}: {desc}", tier_choice)
+        chosen = st.selectbox("Select participant", participant_names, key="forfeit")
+        if st.button("Roll Forfeit"):
+            forfeits = [
+                "Take a large sip of beer",
+                "Swap drinks with someone else",
+                "Sing a stanza of a Bavarian folk song",
+                "Do a dance move randomly in the pub"
+            ]
+            forfeit = random.choice(forfeits)
+            st.warning(f"Forfeit for {chosen}: {forfeit}")
+            add_forfeit(next(p["id"] for p in participants if p["name"] == chosen), forfeit, "Tier 1")
     else:
-        st.write("Add participants first to assign forfeits.")
+        st.write("Add participants first in the sidebar.")
 
 # -------------------- HISTORY TAB --------------------
 with tab5:
-    st.header("📜 Participant History")
+    st.header("📜 History of Forfeits & Challenges")
     if participants:
-        for p in participants:
-            with st.expander(f"{p['codename']} ({p['name']})"):
-                st.markdown("**Forfeits Done:**")
-                forfeits = get_forfeits(p["id"])
-                if forfeits:
-                    for f in forfeits:
-                        parts = f['description'].split(":", 1)
-                        if len(parts) == 2:
-                            title, detail = parts
-                            st.markdown(f"- **{title.strip()}**: {detail.strip()} ({f['tier']})")
-                        else:
-                            st.markdown(f"- {f['description']} ({f['tier']})")
-                else:
-                    st.write("None yet.")
-
-                st.markdown("**Challenges Completed:**")
-                challenges = get_challenges(p["id"])
-                if challenges:
-                    for c in challenges:
-                        st.markdown(f"- {c['description']}")
-                else:
-                    st.write("None yet.")
+        chosen = st.selectbox("Select participant", participant_names, key="history")
+        st.subheader("Forfeits Done")
+        forfeits = get_forfeits(next(p["id"] for p in participants if p["name"] == chosen))
+        for f in forfeits:
+            st.markdown(f"- [{f['tier']}] {f['description']}")
+        st.subheader("Challenges Done")
+        challenges = get_challenges(next(p["id"] for p in participants if p["name"] == chosen))
+        for c in challenges:
+            st.markdown(f"- {c['description']}")
     else:
-        st.write("No participants yet.")
+        st.write("Add participants first in the sidebar.")
 
 # -------------------- LEADERBOARD TAB --------------------
 with tab6:
-    st.header("🏆 Forfeit Leaderboard")
+    st.header("🏆 Leaderboard")
     if participants:
         leaderboard = []
         for p in participants:
             forfeits = get_forfeits(p["id"])
-            score = 0
-            if forfeits:
-                for f in forfeits:
-                    tier = f['tier']
-                    if "Tier 1" in tier:
-                        score += 1
-                    elif "Tier 2" in tier:
-                        score += 3
-                    elif "Tier 3" in tier:
-                        score += 9
-            leaderboard.append((p['codename'], score))
-        leaderboard.sort(key=lambda x: x[1], reverse=True)
-        for codename, score in leaderboard:
-            st.write(f"**{codename}**: {score} points")
+            challenges = get_challenges(p["id"])
+            score = (len(forfeits) * 2) + len(challenges)
+            leaderboard.append({"name": p["name"], "score": score})
+        leaderboard = sorted(leaderboard, key=lambda x: x["score"], reverse=True)
+        for i, entry in enumerate(leaderboard, start=1):
+            st.markdown(f"**{i}. {entry['name']}** — {entry['score']} points")
     else:
         st.write("No participants yet.")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
