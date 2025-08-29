@@ -19,14 +19,13 @@ st.markdown(
         background-attachment: fixed;
     }
 
-    /* Main page container with semi-transparent white box */
+    /* Main page container */
     .stApp > .main {
-        background-color: rgba(255, 255, 255, 0.2); /* 20% opacity */
         padding: 2rem;
         border-radius: 10px;
     }
 
-    /* All text inside main container black for contrast */
+    /* All text inside main container */
     .stApp .main * {
         color: #000000 !important;
         font-family: 'Almendra', serif !important;
@@ -34,7 +33,7 @@ st.markdown(
 
     /* Tab headers container */
     div[role="tablist"] {
-        background-color: rgba(255, 255, 255, 0.2) !important; /* same 20% opacity */
+        background-color: rgba(255, 255, 255, 0.2) !important;
         border-radius: 8px;
         padding: 0.3rem;
         margin-bottom: 1rem;
@@ -48,10 +47,18 @@ st.markdown(
         margin: 0 0.2rem;
     }
 
-    /* Ensure selected tab is readable */
+    /* Selected tab */
     div[role="tab"][aria-selected="true"] {
         background-color: rgba(255, 255, 255, 0.4) !important;
         font-weight: bold;
+    }
+
+    /* Tab content panels */
+    div[role="tabpanel"] {
+        background-color: rgba(255, 255, 255, 0.2) !important; /* semi-transparent white */
+        border-radius: 10px;
+        padding: 1rem;
+        margin-top: 0.5rem;
     }
 
     /* Sidebar container */
@@ -62,7 +69,6 @@ st.markdown(
         font-family: 'Almendra', serif !important;
         color: #000000 !important;
     }
-
     </style>
     """,
     unsafe_allow_html=True
@@ -347,6 +353,7 @@ with tab6:
             st.write(f"**{codename}**: {score} points")
     else:
         st.write("No participants yet.")
+
 
 
 
