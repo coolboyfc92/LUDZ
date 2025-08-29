@@ -136,55 +136,76 @@ with tab1:
         "Remember, Silent Cheers are serious business. 🎯 "
         "Follow the rules and enjoy your Bavarian beverages!"
     )
-    
-    # Show the paragraph
     st.markdown(home_text)
 
-    # Hidden Easter egg
-    if st.button("🎯"):  # only this button triggers the Easter egg
-        password_input = st.text_input("Enter the secret password")
-        if password_input.upper() == "SCHOMILF69":
-            st.success("Easter egg unlocked! You can nominate someone for a Level 3 forfeit.")
-            if participants:
-                chosen = st.selectbox("Select participant", participant_names)
-                if st.button("Nominate for Level 3"):
-                    add_forfeit(next(p["id"] for p in participants if p["name"] == chosen),
-                                "Secret Easter Egg Forfeit", "Tier 3 — Trials")
-                    st.success(f"{chosen} has been nominated!")
-            else:
-                st.write("No participants yet to nominate.")
+    # Check if the Easter egg has already been solved
+    egg_resp = supabase.table("easter_eggs").select("solved").eq("egg_name", "Level3Forfeit").execute()
+    egg_solved = egg_resp.data[0]["solved"] if egg_resp.data else False
+
+    if not egg_solved:
+        if st.button("🎯"):  # hidden trigger emoji
+            password_input = st.text_input("Enter the secret password")
+            if password_input.upper() == "SCHOMILF69":
+                st.success("Easter egg unlocked! You can nominate someone for a Level 3 forfeit.")
+
+                # Mark the Easter egg as solved
+                if egg_resp.data:
+                    supabase.table("easter_eggs").update({"solved": True}).eq("egg_name", "Level3Forfeit").execute()
+                else:
+                    supabase.table("easter_eggs").insert({"egg_name": "Level3Forfeit", "solved": True}).execute()
+
+                if participants:
+                    chosen = st.selectbox("Select participant", participant_names)
+                    if st.button("Nominate for Level 3"):
+                        add_forfeit(
+                            next(p["id"] for p in participants if p["name"] == chosen),
+                            "Secret Easter Egg Forfeit",
+                            "Tier 3 — Trials"
+                        )
+                        st.success(f"{chosen} has been nominated!")
+                else:
+                    st.write("No participants yet to nominate.")
+    else:
+        st.write("🎯 The Easter egg has already been discovered and used!")
 
 # -------------------- PUB RULES TAB --------------------
 with tab2:
     st.header("📖 Pub Rules")
-    selected_pub = st.selectbox("Select a Pub", pub_names)
-    pub_id = next(p["id"] for p in pubs if p["name"] == selected_pub)
+    if pubs:  # Only show selectbox if pubs exist
+        selected_pub = st.selectbox("Select a Pub", pub_names)
+        pub_item = next((p for p in pubs if p["name"] == selected_pub), None)
+        if pub_item:
+            pub_id = pub_item["id"]
 
-    # Show existing rules
-    rules = get_pub_rules(pub_id)
-    if rules:
-        st.markdown("**Existing rules for this pub:**")
-        for r in rules:
-            st.markdown(f"- {r['description']}")
+            # Show existing rules
+            rules = get_pub_rules(pub_id)
+            if rules:
+                st.markdown("**Existing rules for this pub:**")
+                for r in rules:
+                    st.markdown(f"- {r['description']}")
+            else:
+                st.write("No rules applied yet for this pub.")
+
+            # Standard stag night rules
+            standard_rules = [
+                "**Code Names Only:** Everyone must pick a codename. Using a real name = sip penalty.",
+                "**Foreign Drinks Rule:** Drinks must be referred to in a foreign language. Break = sip.",
+                "**Stag’s Word is Law:** Groom can invent a 30-min rule. Break = sip.",
+                "**The Banned Word Game:** Pick a word for the night. Slip = sip.",
+                "**Left-Hand Rule:** Drinks in left hand only. Right hand = sip.",
+                "**Story Chain:** Build a story together; break character = sip.",
+                "**Silent Cheers:** All toasts are silent; speaking = sip."
+            ]
+
+            if st.button("Roll Pub Rule"):
+                selected_rule = random.choice(standard_rules)
+                st.info(f"📜 Rule for **{selected_pub}**: {selected_rule}")
+                add_pub_rule(pub_id, selected_rule)
+                st.success("Rule saved for this pub!")
+        else:
+            st.write("Selected pub not found.")
     else:
-        st.write("No rules applied yet for this pub.")
-
-    # Standard stag night rules
-    standard_rules = [
-        "**Code Names Only:** Everyone must pick a codename. Using a real name = sip penalty.",
-        "**Foreign Drinks Rule:** Drinks must be referred to in a foreign language. Break = sip.",
-        "**Stag’s Word is Law:** Groom can invent a 30-min rule. Break = sip.",
-        "**The Banned Word Game:** Pick a word for the night. Slip = sip.",
-        "**Left-Hand Rule:** Drinks in left hand only. Right hand = sip.",
-        "**Story Chain:** Build a story together; break character = sip.",
-        "**Silent Cheers:** All toasts are silent; speaking = sip."
-    ]
-
-    if st.button("Roll Pub Rule"):
-        selected_rule = random.choice(standard_rules)
-        st.info(f"📜 Rule for **{selected_pub}**: {selected_rule}")
-        add_pub_rule(pub_id, selected_rule)
-        st.success("Rule saved for this pub!")
+        st.write("No pubs exist yet. Add one using the sidebar.")
 
 # -------------------- HOURLY CHALLENGES TAB --------------------
 with tab3:
@@ -301,3 +322,4 @@ with tab6:
             st.write(f"**{codename}**: {score} points")
     else:
         st.write("No participants yet.")
+
