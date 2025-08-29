@@ -369,9 +369,6 @@ with tab6:
     else:
         st.write("No participants yet.")
 # -------------------- PUB RULES OVERVIEW TAB --------------------
-tab7 = st.tabs(["🏠 Home", "📖 Pub Rules", "🥨 Hourly Challenges",
-                "⚔️ Forfeits", "📜 History", "🏆 Leaderboard", "📚 Pub Rules Overview"])[6]
-
 with tab7:
     st.header("📚 Pub Rules Overview")
     if pubs:
@@ -385,3 +382,4 @@ with tab7:
                 st.write("No rules set yet for this pub.")
     else:
         st.write("No pubs yet. Add one using the sidebar.")
+
