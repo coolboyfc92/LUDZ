@@ -9,39 +9,24 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # -------------------- BAVARIAN BACKGROUND --------------------
 st.markdown(
-    """
+    f"""
     <style>
-    body::before {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: url('https://static.vecteezy.com/system/resources/previews/053/232/428/non_2x/the-flag-of-the-city-of-munich-germany-vector.jpg');
+    .stApp {{
+        background-image: url("https://static.vecteezy.com/system/resources/previews/053/232/428/non_2x/the-flag-of-the-city-of-munich-germany-vector.jpg");
         background-size: cover;
         background-repeat: repeat;
-        z-index: -2;
-    }
-    body::after {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.5);
-        z-index: -1;
-    }
-    .main .block-container {
-        background-color: rgba(255,255,255,0.85);
+        background-attachment: fixed;
+    }}
+    .stApp > .main {{
+        background-color: rgba(255, 255, 255, 0.85);
         padding: 2rem;
         border-radius: 10px;
-    }
+    }}
     </style>
     """,
     unsafe_allow_html=True
 )
+
 
 # -------------------- APP HEADER --------------------
 st.set_page_config(page_title="Lüdz – München wird niedergestochen", layout="wide")
@@ -322,4 +307,5 @@ with tab6:
             st.write(f"**{codename}**: {score} points")
     else:
         st.write("No participants yet.")
+
 
