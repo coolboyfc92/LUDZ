@@ -14,24 +14,27 @@ st.markdown(
     /* Load Bavarian-style font */
     @import url('https://fonts.googleapis.com/css2?family=Almendra&display=swap');
 
-   /* Apply font and black text to entire app */
-    .stApp, .stApp * {
+    /* Background image for the entire app */
+    .stApp {
+        background-image: url('https://static.vecteezy.com/system/resources/previews/053/232/428/non_2x/the-flag-of-the-city-of-munich-germany-vector.jpg');
+        background-size: cover;
+        background-repeat: repeat;
+        background-attachment: fixed;
         font-family: 'Almendra', serif !important;
-        
     }
 
-
-  
-
-    /* Main container fully readable */
+    /* Main content container */
     .stApp > .main {
-        background-color: rgba(0, 0, 0, 0.85); /* dark background for readability */
+        background-color: rgba(255, 255, 255, 0.2); /* 20% transparent white */
         padding: 2rem;
-        border-radius: 10px;
-        color: #ffffff; /* white text for contrast */
+        border-radius: 14px;
+        color: #000000; /* black text */
+        backdrop-filter: blur(5px); /* soft blur for readability */
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3); /* subtle shadow */
+        border: 2px solid rgba(0,0,0,0.2); /* playful border */
     }
 
-    /* Text blocks (headings, paragraphs, markdown) with strong background */
+    /* Text blocks (headings, paragraphs, markdown) */
     .stApp .main p, 
     .stApp .main h1, 
     .stApp .main h2, 
@@ -40,11 +43,13 @@ st.markdown(
     .stApp .main h5, 
     .stApp .main h6, 
     .stApp .main div.stMarkdown {
-        background-color: rgba(0, 0, 0, 0.85);
-        padding: 0.5rem 1rem;
-        border-radius: 6px;
+        background-color: rgba(255, 255, 255, 0.2);
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
         display: inline-block;
-        color: #ffffff !important;
+        color: #000000 !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2); /* subtle shadow for text boxes */
+        border: 1px solid rgba(0,0,0,0.15);
     }
 
     /* Optional dark overlay behind page for extra contrast */
@@ -55,22 +60,26 @@ st.markdown(
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0,0,0,0.4);
+        background: rgba(0,0,0,0.2);
         z-index: -1;
     }
 
     /* Sidebar styling */
     .css-1d391kg {
-        background-color: rgba(0,0,0,0.85) !important;
+        background-color: rgba(255,255,255,0.2) !important;
         padding: 1rem;
-        border-radius: 10px;
+        border-radius: 12px;
         font-family: 'Almendra', serif !important;
-        color: #ffffff !important;
+        color: #000000 !important;
+        backdrop-filter: blur(5px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        border: 1.5px solid rgba(0,0,0,0.2);
     }
     </style>
     """,
     unsafe_allow_html=True
 )
+
 # -------------------- APP HEADER --------------------
 st.set_page_config(page_title="Lüdz – München wird niedergestochen", layout="wide")
 st.image(
@@ -350,6 +359,7 @@ with tab6:
             st.write(f"**{codename}**: {score} points")
     else:
         st.write("No participants yet.")
+
 
 
 
