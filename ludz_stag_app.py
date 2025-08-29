@@ -18,7 +18,7 @@ st.markdown(
         left: 0;
         width: 100%;
         height: 100%;
-        background-image: url('https://i.postimg.cc/sgGGw8zW/124273818-3862144150464817-4969867150395063431-n.jpg');
+        background-image: url('https://static.vecteezy.com/system/resources/previews/053/232/428/non_2x/the-flag-of-the-city-of-munich-germany-vector.jpg');
         background-size: cover;
         background-repeat: repeat;
         z-index: -2;
@@ -131,27 +131,28 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 # -------------------- HOME TAB --------------------
 with tab1:
     st.header("🍺 Welcome to the Stag Night App!")
-    st.markdown("""
-This app tracks participants, codenames, pub rules, hourly challenges, and forfeits for a stag night.
-Use the sidebar to add participants or new pubs. Hidden Easter eggs may appear for the clever!
-""")
-    st.subheader("Participants & Codenames")
-    if participants:
-        for p in sorted(participants, key=lambda x: x['codename']):
-            st.write(f"{p['name']} → **{p['codename']}**")
-    else:
-        st.write("No participants yet. Add some using the sidebar.")
+    home_text = (
+        "Welcome to Lüdz! Each participant chooses a codename. "
+        "Remember, Silent Cheers are serious business. 🎯 "
+        "Follow the rules and enjoy your Bavarian beverages!"
+    )
+    
+    # Show the paragraph
+    st.markdown(home_text)
 
-    # Hidden Easter egg emoji link
-    if st.button("🎯"):
+    # Hidden Easter egg
+    if st.button("🎯"):  # only this button triggers the Easter egg
         password_input = st.text_input("Enter the secret password")
         if password_input.upper() == "SCHOMILF69":
             st.success("Easter egg unlocked! You can nominate someone for a Level 3 forfeit.")
-            chosen = st.selectbox("Select participant", participant_names)
-            if st.button("Nominate for Level 3"):
-                add_forfeit(next(p["id"] for p in participants if p["name"] == chosen),
-                            "Secret Easter Egg Forfeit", "Tier 3 — Trials")
-                st.success(f"{chosen} has been nominated!")
+            if participants:
+                chosen = st.selectbox("Select participant", participant_names)
+                if st.button("Nominate for Level 3"):
+                    add_forfeit(next(p["id"] for p in participants if p["name"] == chosen),
+                                "Secret Easter Egg Forfeit", "Tier 3 — Trials")
+                    st.success(f"{chosen} has been nominated!")
+            else:
+                st.write("No participants yet to nominate.")
 
 # -------------------- PUB RULES TAB --------------------
 with tab2:
@@ -159,7 +160,7 @@ with tab2:
     selected_pub = st.selectbox("Select a Pub", pub_names)
     pub_id = next(p["id"] for p in pubs if p["name"] == selected_pub)
 
-    # Fetch existing rules for display
+    # Show existing rules
     rules = get_pub_rules(pub_id)
     if rules:
         st.markdown("**Existing rules for this pub:**")
@@ -184,7 +185,6 @@ with tab2:
         st.info(f"📜 Rule for **{selected_pub}**: {selected_rule}")
         add_pub_rule(pub_id, selected_rule)
         st.success("Rule saved for this pub!")
-
 
 # -------------------- HOURLY CHALLENGES TAB --------------------
 with tab3:
