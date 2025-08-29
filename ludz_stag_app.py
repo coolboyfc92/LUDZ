@@ -19,18 +19,24 @@ st.markdown(
         background-attachment: fixed;
     }
 
-    /* Wrap the entire main content */
+    /* Main container */
     .stApp > .main {
-        background-color: rgba(255, 255, 255, 0.8) !important; /* strong white-ish background */
-        color: #000000 !important; /* black text */
+        background-color: rgba(255, 255, 255, 0.8) !important; /* white-ish */
         padding: 2rem;
         border-radius: 10px;
         font-family: 'Almendra', serif !important;
     }
 
-    /* Force all text inside main container to black */
-    .stApp > .main * {
-        color: #000000 !important;
+    /* Force text color for common elements inside main */
+    .stApp > .main p,
+    .stApp > .main h1,
+    .stApp > .main h2,
+    .stApp > .main h3,
+    .stApp > .main h4,
+    .stApp > .main h5,
+    .stApp > .main h6,
+    .stApp > .main div.stMarkdown {
+        color: #000000 !important; /* black text */
     }
 
     /* Tab headers container */
@@ -61,20 +67,22 @@ st.markdown(
         border-radius: 10px;
         padding: 1rem;
         margin-top: 0.5rem;
+        color: #000000 !important; /* force black inside tab panels */
     }
 
-    /* Sidebar container */
+    /* Sidebar */
     .css-1d391kg {
-        background-color: rgba(0, 0, 0, 0.85) !important;
+        background-color: rgba(0,0,0,0.85) !important;
         padding: 1rem;
         border-radius: 10px;
         font-family: 'Almendra', serif !important;
-        color: #ffffff !important; /* keep sidebar text white */
+        color: #ffffff !important; /* white text in sidebar */
     }
     </style>
     """,
     unsafe_allow_html=True
 )
+
 # -------------------- APP HEADER --------------------
 st.set_page_config(page_title="Lüdz – München wird niedergestochen", layout="wide")
 st.image(
@@ -354,6 +362,7 @@ with tab6:
             st.write(f"**{codename}**: {score} points")
     else:
         st.write("No participants yet.")
+
 
 
 
