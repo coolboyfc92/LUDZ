@@ -14,10 +14,12 @@ st.markdown(
     /* Load Bavarian-style font */
     @import url('https://fonts.googleapis.com/css2?family=Almendra&display=swap');
 
-    /* Apply font to entire app */
+   /* Apply font and black text to entire app */
     .stApp, .stApp * {
         font-family: 'Almendra', serif !important;
+        color: #000000 !important;
     }
+
 
     /* Full-page Bavarian background */
     .stApp {
@@ -354,6 +356,7 @@ with tab6:
             st.write(f"**{codename}**: {score} points")
     else:
         st.write("No participants yet.")
+
 
 
 
