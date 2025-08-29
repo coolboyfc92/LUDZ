@@ -27,7 +27,7 @@ st.markdown(
 
     /* All text inside main container */
     .stApp .main * {
-        color: #000000 !important;
+        color: #000000 !important;  /* black text */
         font-family: 'Almendra', serif !important;
     }
 
@@ -63,11 +63,11 @@ st.markdown(
 
     /* Sidebar container */
     .css-1d391kg {
-        background-color: rgba(255, 255, 255, 0.2) !important;
+        background-color: rgba(0, 0, 0, 0.85) !important; /* dark sidebar background */
         padding: 1rem;
         border-radius: 10px;
         font-family: 'Almendra', serif !important;
-        color: #000000 !important;
+        color: #ffffff !important;  /* white text in sidebar */
     }
     </style>
     """,
@@ -353,6 +353,7 @@ with tab6:
             st.write(f"**{codename}**: {score} points")
     else:
         st.write("No participants yet.")
+
 
 
 
