@@ -11,16 +11,37 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 st.markdown(
     f"""
     <style>
+    /* Full-page Bavarian background */
     .stApp {{
         background-image: url("https://static.vecteezy.com/system/resources/previews/053/232/428/non_2x/the-flag-of-the-city-of-munich-germany-vector.jpg");
         background-size: cover;
         background-repeat: repeat;
         background-attachment: fixed;
     }}
+
+    /* Semi-transparent main container with rounded corners */
     .stApp > .main {{
-        background-color: rgba(255, 255, 255, 0.85);
+        background-color: rgba(255, 255, 255, 0.95);  /* almost opaque for readability */
         padding: 2rem;
         border-radius: 10px;
+        color: #000;  /* ensure black text */
+    }}
+
+    /* Subtle text shadow for all text in main container */
+    .stApp > .main * {{
+        text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+    }}
+
+    /* Optional: dark overlay behind the page for contrast */
+    body::after {{
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.55);  /* slightly darkens the background for better readability */
+        z-index: -1;
     }}
     </style>
     """,
@@ -307,5 +328,6 @@ with tab6:
             st.write(f"**{codename}**: {score} points")
     else:
         st.write("No participants yet.")
+
 
 
