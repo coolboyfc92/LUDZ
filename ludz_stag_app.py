@@ -17,17 +17,11 @@ st.markdown(
    /* Apply font and black text to entire app */
     .stApp, .stApp * {
         font-family: 'Almendra', serif !important;
-        color: #000000 !important;
+        
     }
 
 
-    /* Full-page Bavarian background */
-    .stApp {
-        background-image: url("https://www.thebloodytourofyork.co.uk/wp-content/uploads/2020/07/parchment-paper-cropped-scaled.jpg");
-        background-size: cover;
-        background-repeat: repeat;
-        background-attachment: fixed;
-    }
+  
 
     /* Main container fully readable */
     .stApp > .main {
@@ -356,6 +350,7 @@ with tab6:
             st.write(f"**{codename}**: {score} points")
     else:
         st.write("No participants yet.")
+
 
 
 
