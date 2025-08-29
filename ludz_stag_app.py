@@ -11,22 +11,13 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 st.markdown(
     """
     <style>
-    
-    body::before {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: url('https://i.postimg.cc/sgGGw8zW/124273818-3862144150464817-4969867150395063431-n.jpg');
+    .stApp {
+        background-image: url("https://i.postimg.cc/sgGGw8zW/124273818-3862144150464817-4969867150395063431-n.jpg");
         background-size: cover;
         background-repeat: repeat;
-        opacity: 0.2; /* Adjust for subtlety */
-        z-index: -1; /* Behind everything */
+        background-attachment: fixed;
     }
 
-    
     .main .block-container {
         background-color: rgba(255, 255, 255, 0.9);
         padding: 2rem;
@@ -202,6 +193,7 @@ with tab4:
                     st.markdown(f"- {c['description']}")
             else:
                 st.write("None yet.")
+
 
 
 
