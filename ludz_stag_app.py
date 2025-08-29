@@ -7,12 +7,10 @@ SUPABASE_URL = st.secrets["SUPABASE_URL"]
 SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# -------------------- PAGE CONFIG --------------------
-st.set_page_config(page_title="Lüdz – München wird niedergestochen", layout="wide")
+# -------------------- BAVARIAN BACKGROUND --------------------
 st.markdown(
     """
     <style>
-    /* Background image */
     body::before {
         content: "";
         position: fixed;
@@ -20,13 +18,11 @@ st.markdown(
         left: 0;
         width: 100%;
         height: 100%;
-        background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Flag_of_Munich_%28striped%29.svg/2560px-Flag_of_Munich_%28striped%29.svg.png');
+        background-image: url('https://i.postimg.cc/sgGGw8zW/124273818-3862144150464817-4969867150395063431-n.jpg');
         background-size: cover;
         background-repeat: repeat;
         z-index: -2;
     }
-
-    /* Dark overlay for readability */
     body::after {
         content: "";
         position: fixed;
@@ -34,13 +30,11 @@ st.markdown(
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.5);
+        background: rgba(0,0,0,0.5);
         z-index: -1;
     }
-
-    /* Main container styling */
     .main .block-container {
-        background-color: rgba(255, 255, 255, 0.85);
+        background-color: rgba(255,255,255,0.85);
         padding: 2rem;
         border-radius: 10px;
     }
@@ -49,24 +43,33 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# -------------------- APP HEADER --------------------
+st.set_page_config(page_title="Lüdz – München wird niedergestochen", layout="wide")
+st.image(
+    "https://scontent.fgla3-2.fna.fbcdn.net/v/t1.6435-9/82188351_10157905977513209_914144228009836544_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=2285d6&_nc_ohc=8O4HayFb4yMQ7kNvwGzbJd1&_nc_oc=AdnhH9iqNukXmPHkCY2ZmUWO65mN5zi_K8nrenyqlQ6wNqxTZd4V5La3B6pvW90UT20eZ_YTE7ANi1G-BXQ5siZO&_nc_zt=23&_nc_ht=scontent.fgla3-2.fna&_nc_gid=YbVcWtb7-j1WZarS-kHLMg&oh=00_AfVkCw2OCrt-i97EcySIjtgfynQsxRva2J7Z-SSjW4wmLw&oe=68CBD10E",
+    width=400
+)
+st.title("🍺 Lüdz")
+st.subheader("München wird niedergestochen")
+
 # -------------------- UTILITY FUNCTIONS --------------------
 def get_participants():
-    response = supabase.table("participants").select("*").execute()
-    return response.data if response.data else []
+    resp = supabase.table("participants").select("*").execute()
+    return resp.data if resp.data else []
 
 def add_participant(name, codename):
     supabase.table("participants").insert({"name": name, "codename": codename}).execute()
 
 def get_pubs():
-    response = supabase.table("pubs").select("*").execute()
-    return response.data if response.data else []
+    resp = supabase.table("pubs").select("*").execute()
+    return resp.data if resp.data else []
 
-def add_pub(name):
-    supabase.table("pubs").insert({"name": name}).execute()
+def add_pub(pub_name):
+    supabase.table("pubs").insert({"name": pub_name}).execute()
 
 def get_pub_rules(pub_id):
-    response = supabase.table("pub_rules").select("*").eq("pub_id", pub_id).execute()
-    return response.data if response.data else []
+    resp = supabase.table("pub_rules").select("*").eq("pub_id", pub_id).execute()
+    return resp.data if resp.data else []
 
 def add_pub_rule(pub_id, description):
     supabase.table("pub_rules").insert({"pub_id": pub_id, "description": description}).execute()
@@ -85,15 +88,15 @@ def add_challenge(participant_id, description):
     }).execute()
 
 def get_forfeits(participant_id):
-    response = supabase.table("forfeits_done").select("*").eq("participant_id", participant_id).execute()
-    return response.data
+    resp = supabase.table("forfeits_done").select("*").eq("participant_id", participant_id).execute()
+    return resp.data
 
 def get_challenges(participant_id):
-    response = supabase.table("challenges_done").select("*").eq("participant_id", participant_id).execute()
-    return response.data
+    resp = supabase.table("challenges_done").select("*").eq("participant_id", participant_id).execute()
+    return resp.data
 
-# -------------------- PARTICIPANT SETUP --------------------
-st.sidebar.header("🍻 Add Participants with Custom Codenames")
+# -------------------- SIDEBAR --------------------
+st.sidebar.header("🍻 Add Participants")
 participants_input = st.sidebar.text_area(
     "Enter participants and codenames (Name ; Codename)", ""
 ).splitlines()
@@ -106,7 +109,14 @@ if st.sidebar.button("Add Participants"):
                 add_participant(name, codename)
     st.sidebar.success("Participants added!")
 
-# Fetch participants and pubs
+st.sidebar.header("🍺 Add Pub")
+new_pub_name = st.sidebar.text_input("Pub Name")
+if st.sidebar.button("Add Pub"):
+    if new_pub_name.strip():
+        add_pub(new_pub_name.strip())
+        st.sidebar.success(f"Pub '{new_pub_name.strip()}' added!")
+
+# -------------------- FETCH DATA --------------------
 participants = get_participants()
 participant_names = [p["name"] for p in participants]
 pubs = get_pubs()
@@ -114,64 +124,73 @@ pub_names = [p["name"] for p in pubs]
 
 # -------------------- TABS --------------------
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-    "🏠 Home", "📖 Pub Rules", "🥨 Drinking Games", "⚔️ Forfeits", "📜 History", "🏆 Leaderboard"
+    "🏠 Home", "📖 Pub Rules", "🥨 Hourly Challenges",
+    "⚔️ Forfeits", "📜 History", "🏆 Leaderboard"
 ])
 
 # -------------------- HOME TAB --------------------
 with tab1:
-    st.header("🍺 Willkommen zum Stag Night!")
+    st.header("🍺 Welcome to the Stag Night App!")
     st.markdown("""
-    This app is your Bavarian guide to stag night madness. 
-    Track participants, assign codenames, and play hourly drinking games or 
-    assign legendary forfeits. Keep your wits and drink responsibly!
-    """)
-    
+This app tracks participants, codenames, pub rules, hourly challenges, and forfeits for a stag night.
+Use the sidebar to add participants or new pubs. Hidden Easter eggs may appear for the clever!
+""")
     st.subheader("Participants & Codenames")
     if participants:
         for p in sorted(participants, key=lambda x: x['codename']):
             st.write(f"{p['name']} → **{p['codename']}**")
     else:
-        st.write("No participants yet. Add some in the sidebar to get started!")
+        st.write("No participants yet. Add some using the sidebar.")
 
-    # Hidden Easter Egg
-    egg_clicked = st.button("🎯")
-    if egg_clicked:
-        pwd = st.text_input("Enter the secret password to nominate a level 3 forfeit", type="password")
-        if pwd == "SCHOMILF69":
-            st.success("Password correct! You can nominate a participant for a level 3 forfeit.")
-            participant_name = st.selectbox("Select participant", participant_names)
-            if st.button("Assign Level 3 Forfeit"):
-                pid = next(p["id"] for p in participants if p["name"] == participant_name)
-                add_forfeit(pid, "Secret Easter Egg Forfeit", "Tier 3 — Trials")
-                st.balloons()
+    # Hidden Easter egg emoji link
+    if st.button("🎯"):
+        password_input = st.text_input("Enter the secret password")
+        if password_input.upper() == "SCHOMILF69":
+            st.success("Easter egg unlocked! You can nominate someone for a Level 3 forfeit.")
+            chosen = st.selectbox("Select participant", participant_names)
+            if st.button("Nominate for Level 3"):
+                add_forfeit(next(p["id"] for p in participants if p["name"] == chosen),
+                            "Secret Easter Egg Forfeit", "Tier 3 — Trials")
+                st.success(f"{chosen} has been nominated!")
 
 # -------------------- PUB RULES TAB --------------------
 with tab2:
     st.header("📖 Pub Rules")
-    selected_pub = st.selectbox("Select Pub", pub_names)
-    pub_obj = next((p for p in pubs if p["name"] == selected_pub), None)
-    if pub_obj:
-        rules = get_pub_rules(pub_obj["id"])
-        if rules:
-            for r in rules:
-                st.markdown(f"- {r['description']}")
-        else:
-            st.write("No rules set for this pub yet.")
-    
-    st.subheader("Add New Rule")
-    new_rule = st.text_input("Rule Description")
-    if st.button("Add Rule"):
-        if pub_obj and new_rule:
-            add_pub_rule(pub_obj["id"], new_rule)
-            st.success("Rule added!")
+    selected_pub = st.selectbox("Select a Pub", pub_names)
+    pub_id = next(p["id"] for p in pubs if p["name"] == selected_pub)
 
-# -------------------- DRINKING GAMES TAB --------------------
+    # Fetch existing rules for display
+    rules = get_pub_rules(pub_id)
+    if rules:
+        st.markdown("**Existing rules for this pub:**")
+        for r in rules:
+            st.markdown(f"- {r['description']}")
+    else:
+        st.write("No rules applied yet for this pub.")
+
+    # Standard stag night rules
+    standard_rules = [
+        "**Code Names Only:** Everyone must pick a codename. Using a real name = sip penalty.",
+        "**Foreign Drinks Rule:** Drinks must be referred to in a foreign language. Break = sip.",
+        "**Stag’s Word is Law:** Groom can invent a 30-min rule. Break = sip.",
+        "**The Banned Word Game:** Pick a word for the night. Slip = sip.",
+        "**Left-Hand Rule:** Drinks in left hand only. Right hand = sip.",
+        "**Story Chain:** Build a story together; break character = sip.",
+        "**Silent Cheers:** All toasts are silent; speaking = sip."
+    ]
+
+    if st.button("Roll Pub Rule"):
+        selected_rule = random.choice(standard_rules)
+        st.info(f"📜 Rule for **{selected_pub}**: {selected_rule}")
+        add_pub_rule(pub_id, selected_rule)
+        st.success("Rule saved for this pub!")
+
+
+# -------------------- HOURLY CHALLENGES TAB --------------------
 with tab3:
     st.header("🕰️ Hourly Challenges")
-    st.write("Roll a dice to assign a random challenge for a participant.")
-
     dice_challenges = {
-        1: "Mystery Round: One person secretly orders a random drink for another (bartender’s choice).",
+        1: "Mystery Round: One person secretly orders a random drink for another.",
         2: "Lost in Translation: One person orders the next round using mime only.",
         3: "Accent Round: Everyone speaks in the same accent for one drink.",
         4: "The Stag’s Shadow: Copy the groom’s body language for 10 minutes.",
@@ -180,7 +199,7 @@ with tab3:
     }
 
     if participants:
-        participant_name = st.selectbox("Select Participant", participant_names, key="dg_participant")
+        participant_name = st.selectbox("Select Participant", participant_names)
         if st.button("Roll Dice for Challenge"):
             roll = random.randint(1, 6)
             challenge = dice_challenges[roll]
@@ -189,13 +208,11 @@ with tab3:
             pid = next(p["id"] for p in participants if p["name"] == participant_name)
             add_challenge(pid, challenge)
     else:
-        st.write("Add participants to start rolling hourly challenges.")
+        st.write("Add participants first to roll challenges.")
 
 # -------------------- FORFEITS TAB --------------------
 with tab4:
     st.header("⚔️ Forfeit Randomiser")
-    st.write("Select a participant and tier to assign a forfeit.")
-
     tier1 = {
         "The Whisper of Glass": "Do a shot. The group chooses what.",
         "Pints Out for Harambe": "Pour your drink out. You stay dry until the next bar.",
@@ -218,11 +235,10 @@ with tab4:
         "Trial by Earth": "Lick something grim but safe (classic: armpit). Outdoors? Eat a handful of grass.",
         "Trial by Air": "Stand on a chair or table and give a dramatic toast in your best Shakespearean voice."
     }
-
     tiers = {"Tier 1 — Light": tier1, "Tier 2 — Medium": tier2, "Tier 3 — Trials": tier3}
 
     if participants:
-        participant_name = st.selectbox("Select Participant for Forfeit", participant_names, key="forfeit_participant")
+        participant_name = st.selectbox("Select Participant for Forfeit", participant_names)
         tier_choice = st.selectbox("Select Tier", list(tiers.keys()))
         if st.button("Randomise Forfeit"):
             name, desc = random.choice(list(tiers[tier_choice].items()))
@@ -231,7 +247,7 @@ with tab4:
             pid = next(p["id"] for p in participants if p["name"] == participant_name)
             add_forfeit(pid, f"{name}: {desc}", tier_choice)
     else:
-        st.write("Add participants to assign forfeits.")
+        st.write("Add participants first to assign forfeits.")
 
 # -------------------- HISTORY TAB --------------------
 with tab5:
@@ -260,20 +276,28 @@ with tab5:
                 else:
                     st.write("None yet.")
     else:
-        st.write("No participants to show history.")
+        st.write("No participants yet.")
 
 # -------------------- LEADERBOARD TAB --------------------
 with tab6:
     st.header("🏆 Forfeit Leaderboard")
     if participants:
         leaderboard = []
-        tier_weights = {"Tier 1 — Light": 1, "Tier 2 — Medium": 2, "Tier 3 — Trials": 3}
         for p in participants:
             forfeits = get_forfeits(p["id"])
-            score = sum(tier_weights.get(f['tier'], 0) for f in forfeits)
-            leaderboard.append({"name": p["codename"], "score": score})
-        leaderboard = sorted(leaderboard, key=lambda x: x["score"], reverse=True)
-        for i, entry in enumerate(leaderboard, start=1):
-            st.write(f"{i}. {entry['name']} — {entry['score']} points")
+            score = 0
+            if forfeits:
+                for f in forfeits:
+                    tier = f['tier']
+                    if "Tier 1" in tier:
+                        score += 1
+                    elif "Tier 2" in tier:
+                        score += 3
+                    elif "Tier 3" in tier:
+                        score += 9
+            leaderboard.append((p['codename'], score))
+        leaderboard.sort(key=lambda x: x[1], reverse=True)
+        for codename, score in leaderboard:
+            st.write(f"**{codename}**: {score} points")
     else:
-        st.write("No participants yet to generate leaderboard.")
+        st.write("No participants yet.")
