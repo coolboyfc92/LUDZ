@@ -11,7 +11,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 st.markdown(
     """
     <style>
-    /* Add background to the entire page using a pseudo-element */
+    
     body::before {
         content: "";
         position: fixed;
@@ -19,14 +19,14 @@ st.markdown(
         left: 0;
         width: 100%;
         height: 100%;
-        background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Bavarian_flag.svg/1200px-Bavarian_flag.svg.png');
+        background-image: url('https://i.postimg.cc/sgGGw8zW/124273818-3862144150464817-4969867150395063431-n.jpg');
         background-size: cover;
         background-repeat: repeat;
         opacity: 0.2; /* Adjust for subtlety */
         z-index: -1; /* Behind everything */
     }
 
-    /* Optional: make main content background slightly opaque for readability */
+    
     .main .block-container {
         background-color: rgba(255, 255, 255, 0.9);
         padding: 2rem;
@@ -202,5 +202,6 @@ with tab4:
                     st.markdown(f"- {c['description']}")
             else:
                 st.write("None yet.")
+
 
 
