@@ -9,33 +9,33 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # -------------------- BAVARIAN BACKGROUND --------------------
 st.markdown(
-    f"""
+    """
     <style>
     /* Load Bavarian-style font */
     @import url('https://fonts.googleapis.com/css2?family=Almendra&display=swap');
 
-    /* Apply font to the entire app */
-    .stApp, .stApp * {{
+    /* Apply font to entire app */
+    .stApp, .stApp * {
         font-family: 'Almendra', serif !important;
-    }}
+    }
 
     /* Full-page Bavarian background */
-    .stApp {{
+    .stApp {
         background-image: url("https://static.vecteezy.com/system/resources/previews/053/232/428/non_2x/the-flag-of-the-city-of-munich-germany-vector.jpg");
         background-size: cover;
         background-repeat: repeat;
         background-attachment: fixed;
-    }}
+    }
 
-    /* Semi-transparent main container */
-    .stApp > .main {{
-        background-color: rgba(255, 255, 255, 0.6);
+    /* Main container fully readable */
+    .stApp > .main {
+        background-color: rgba(0, 0, 0, 0.85); /* dark background for readability */
         padding: 2rem;
         border-radius: 10px;
-        color: #000;
-    }}
+        color: #ffffff; /* white text for contrast */
+    }
 
-    /* Each text block has its own translucent background */
+    /* Text blocks (headings, paragraphs, markdown) with strong background */
     .stApp .main p, 
     .stApp .main h1, 
     .stApp .main h2, 
@@ -43,15 +43,16 @@ st.markdown(
     .stApp .main h4, 
     .stApp .main h5, 
     .stApp .main h6, 
-    .stApp .main div.stMarkdown {{
-        background-color: rgba(255, 255, 255, 0.85);
+    .stApp .main div.stMarkdown {
+        background-color: rgba(0, 0, 0, 0.85);
         padding: 0.5rem 1rem;
         border-radius: 6px;
         display: inline-block;
-    }}
+        color: #ffffff !important;
+    }
 
-    /* Optional: dark overlay behind page for contrast */
-    body::after {{
+    /* Optional dark overlay behind page for extra contrast */
+    body::after {
         content: "";
         position: fixed;
         top: 0;
@@ -60,15 +61,16 @@ st.markdown(
         height: 100%;
         background: rgba(0,0,0,0.4);
         z-index: -1;
-    }}
+    }
 
-    /* Sidebar styling to match */
-    .css-1d391kg {{
-        background-color: rgba(255,255,255,0.85) !important;
+    /* Sidebar styling */
+    .css-1d391kg {
+        background-color: rgba(0,0,0,0.85) !important;
         padding: 1rem;
         border-radius: 10px;
         font-family: 'Almendra', serif !important;
-    }}
+        color: #ffffff !important;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -352,6 +354,7 @@ with tab6:
             st.write(f"**{codename}**: {score} points")
     else:
         st.write("No participants yet.")
+
 
 
 
