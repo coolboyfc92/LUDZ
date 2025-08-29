@@ -13,7 +13,7 @@ st.markdown(
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Almendra&display=swap');
 
-    /* Background image for the app */
+    /* App background image */
     .stApp {
         background-image: url('https://static.vecteezy.com/system/resources/previews/053/232/428/non_2x/the-flag-of-the-city-of-munich-germany-vector.jpg');
         background-size: cover;
@@ -21,9 +21,9 @@ st.markdown(
         font-family: 'Almendra', serif !important;
     }
 
-    /* Main container blocks */
+    /* Main content blocks */
     .stBlock, .stMarkdown > div {
-        background-color: rgba(255, 255, 255, 0.2) !important;  /* 20% transparent white */
+        background-color: rgba(255, 255, 255, 0.65) !important;  /* 65% transparent white */
         padding: 12px 18px !important;
         border-radius: 12px !important;
         color: #000000 !important;
@@ -32,21 +32,21 @@ st.markdown(
         box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
 
-    /* Headings */
+    /* Headings inside markdown */
     .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, 
     .stMarkdown h4, .stMarkdown h5, .stMarkdown h6 {
-        background-color: rgba(0,0,0,0.25) !important;
+        background-color: rgba(255,255,255,0.7) !important;
         color: #000000 !important;
         padding: 10px 16px !important;
         border-radius: 10px !important;
-        text-shadow: 1px 1px 2px rgba(255,255,255,0.6);
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.15);
         display: inline-block !important;
         margin-bottom: 8px !important;
     }
 
     /* Sidebar */
     [data-testid="stSidebar"] {
-        background-color: rgba(255,255,255,0.2) !important;
+        background-color: rgba(255,255,255,0.65) !important;
         padding: 12px !important;
         border-radius: 12px !important;
         font-family: 'Almendra', serif !important;
@@ -55,11 +55,25 @@ st.markdown(
         box-shadow: 0 4px 12px rgba(0,0,0,0.25);
         border: 1px solid rgba(0,0,0,0.15);
     }
+
+    /* Tab headers / navigation bar */
+    .css-1r6slb0, .css-1emrehy {  /* Streamlit tab bar containers */
+        background-color: rgba(255, 255, 255, 0.65) !important;
+        color: #000000 !important;
+        border-radius: 12px !important;
+        font-family: 'Almendra', serif !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        padding: 6px 12px !important;
+    }
+
+    .css-1emrehy button {
+        color: #000000 !important;
+        font-family: 'Almendra', serif !important;
+    }
     </style>
     """,
     unsafe_allow_html=True
 )
-
 
 # -------------------- APP HEADER --------------------
 st.set_page_config(page_title="Lüdz – München wird niedergestochen", layout="wide")
@@ -340,6 +354,7 @@ with tab6:
             st.write(f"**{codename}**: {score} points")
     else:
         st.write("No participants yet.")
+
 
 
 
