@@ -25,9 +25,20 @@ st.markdown(
         border-radius: 10px;
     }
 
-    /* All text inside main container */
-    .stApp .main * {
-        color: #000000 !important;  /* black text */
+    /* Force all text inside main container to black */
+    .stApp .main, 
+    .stApp .main * , 
+    .stApp .main div, 
+    .stApp .main p, 
+    .stApp .main span, 
+    .stApp .main h1, 
+    .stApp .main h2, 
+    .stApp .main h3, 
+    .stApp .main h4, 
+    .stApp .main h5, 
+    .stApp .main h6, 
+    .stApp .main div.stMarkdown {
+        color: #000000 !important;
         font-family: 'Almendra', serif !important;
     }
 
@@ -73,7 +84,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
 # -------------------- APP HEADER --------------------
 st.set_page_config(page_title="Lüdz – München wird niedergestochen", layout="wide")
 st.image(
@@ -353,6 +363,7 @@ with tab6:
             st.write(f"**{codename}**: {score} points")
     else:
         st.write("No participants yet.")
+
 
 
 
