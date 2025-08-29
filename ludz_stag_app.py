@@ -166,10 +166,16 @@ pubs = get_pubs()
 pub_names = [p["pub_name"] for p in pubs]
 
 # -------------------- TABS --------------------
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-    "🏠 Home", "📖 Pub Rules", "🥨 Hourly Challenges",
-    "⚔️ Forfeits", "📜 History", "🏆 Leaderboard"
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
+    "🏠 Home", 
+    "📖 Pub Rules", 
+    "🥨 Hourly Challenges",
+    "⚔️ Forfeits", 
+    "📜 History", 
+    "🏆 Leaderboard",
+    "📚 Pub Rules Overview"   # <-- new tab
 ])
+
 
 # -------------------- HOME TAB --------------------
 with tab1:
@@ -362,3 +368,20 @@ with tab6:
             st.write(f"**{codename}**: {score} points")
     else:
         st.write("No participants yet.")
+# -------------------- PUB RULES OVERVIEW TAB --------------------
+tab7 = st.tabs(["🏠 Home", "📖 Pub Rules", "🥨 Hourly Challenges",
+                "⚔️ Forfeits", "📜 History", "🏆 Leaderboard", "📚 Pub Rules Overview"])[6]
+
+with tab7:
+    st.header("📚 Pub Rules Overview")
+    if pubs:
+        for pub in pubs:
+            st.subheader(f"🍺 {pub['pub_name']}")
+            rules = get_pub_rules(pub["id"])
+            if rules:
+                for r in rules:
+                    st.markdown(f"- {r['rule']}")
+            else:
+                st.write("No rules set yet for this pub.")
+    else:
+        st.write("No pubs yet. Add one using the sidebar.")
