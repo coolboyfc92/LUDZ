@@ -7,7 +7,7 @@ SUPABASE_URL = st.secrets["SUPABASE_URL"]
 SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# -------------------- BAVARIAN BACKGROUND --------------------
+# -------------------- BAVARIAN BACKGROUND & FONT --------------------
 st.markdown(
     """
     <style>
@@ -21,10 +21,11 @@ st.markdown(
 
     /* Main container */
     .stApp > .main {
-        background-color: rgba(255, 255, 255, 0.8) !important; /* white-ish */
+        background-color: rgba(255, 255, 255, 0.8) !important;
         padding: 2rem;
         border-radius: 10px;
         font-family: 'Almendra', serif !important;
+        color: #000000 !important;
     }
 
     /* Force text color for common elements inside main */
@@ -36,7 +37,7 @@ st.markdown(
     .stApp > .main h5,
     .stApp > .main h6,
     .stApp > .main div.stMarkdown {
-        color: #000000 !important; /* black text */
+        color: #000000 !important;
     }
 
     /* Tab headers container */
@@ -53,14 +54,14 @@ st.markdown(
         border-radius: 5px;
         padding: 0.4rem 0.8rem;
         margin: 0 0.2rem;
-        color: #000000 !important; /* black text for tabs */
+        color: #000000 !important;
     }
 
     /* Selected tab */
     div[role="tab"][aria-selected="true"] {
         background-color: rgba(255, 255, 255, 0.4) !important;
         font-weight: bold;
-        color: #000000 !important; /* ensure selected tab text is black */
+        color: #000000 !important;
     }
 
     /* Tab content panels */
@@ -69,7 +70,7 @@ st.markdown(
         border-radius: 10px;
         padding: 1rem;
         margin-top: 0.5rem;
-        color: #000000 !important; /* force black inside tab panels */
+        color: #000000 !important;
     }
 
     /* Sidebar */
@@ -78,7 +79,7 @@ st.markdown(
         padding: 1rem;
         border-radius: 10px;
         font-family: 'Almendra', serif !important;
-        color: #ffffff !important; /* white text in sidebar */
+        color: #ffffff !important;
     }
     </style>
     """,
@@ -107,14 +108,14 @@ def get_pubs():
     return resp.data if resp.data else []
 
 def add_pub(pub_name):
-    supabase.table("pubs").insert({"name": pub_name}).execute()
+    supabase.table("pubs").insert({"pub_name": pub_name}).execute()
 
 def get_pub_rules(pub_id):
     resp = supabase.table("pub_rules").select("*").eq("pub_id", pub_id).execute()
     return resp.data if resp.data else []
 
-def add_pub_rule(pub_id, rule_text):
-    supabase.table("pub_rules").insert({"pub_id": pub_id, "rule": rule_text}).execute()
+def add_pub_rule(pub_id, rule):
+    supabase.table("pub_rules").insert({"pub_id": pub_id, "rule": rule}).execute()
 
 def add_forfeit(participant_id, description, tier):
     supabase.table("forfeits_done").insert({
@@ -162,7 +163,7 @@ if st.sidebar.button("Add Pub"):
 participants = get_participants()
 participant_names = [p["name"] for p in participants]
 pubs = get_pubs()
-pub_names = [p["name"] for p in pubs]
+pub_names = [p["pub_name"] for p in pubs]
 
 # -------------------- TABS --------------------
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
@@ -180,17 +181,16 @@ with tab1:
     )
     st.markdown(home_text)
 
-    # Check if the Easter egg has already been solved
+    # Check Easter egg
     egg_resp = supabase.table("easter_eggs").select("solved").eq("egg_name", "Level3Forfeit").execute()
     egg_solved = egg_resp.data[0]["solved"] if egg_resp.data else False
 
     if not egg_solved:
-        if st.button("🍺"):  # hidden trigger emoji
+        if st.button("🍺"):
             password_input = st.text_input("Enter the secret password")
             if password_input.upper() == "SCHOMILF69":
                 st.success("Easter egg unlocked! You can nominate someone for a Level 3 forfeit.")
 
-                # Mark the Easter egg as solved
                 if egg_resp.data:
                     supabase.table("easter_eggs").update({"solved": True}).eq("egg_name", "Level3Forfeit").execute()
                 else:
@@ -213,13 +213,12 @@ with tab1:
 # -------------------- PUB RULES TAB --------------------
 with tab2:
     st.header("📖 Pub Rules")
-    if pubs:  # Only show selectbox if pubs exist
+    if pubs:
         selected_pub = st.selectbox("Select a Pub", pub_names)
-        pub_item = next((p for p in pubs if p["name"] == selected_pub), None)
+        pub_item = next((p for p in pubs if p["pub_name"] == selected_pub), None)
         if pub_item:
             pub_id = pub_item["id"]
 
-            # Show existing rules
             rules = get_pub_rules(pub_id)
             if rules:
                 st.markdown("**Existing rules for this pub:**")
@@ -228,7 +227,6 @@ with tab2:
             else:
                 st.write("No rules applied yet for this pub.")
 
-            # Standard stag night rules
             standard_rules = [
                 "**Code Names Only:** Everyone must pick a codename. Using a real name = sip penalty.",
                 "**Foreign Drinks Rule:** Drinks must be referred to in a foreign language. Break = sip.",
