@@ -21,7 +21,7 @@ st.markdown(
 
     /* Full-page Bavarian background */
     .stApp {
-        background-image: url("https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/4b6bedc8-6e5d-4b55-a5e2-5e510fdd0ae6/d13abwf-5016bbda-6e43-40db-a556-1d5fe6fb4c50.jpg");
+        background-image: url("https://www.thebloodytourofyork.co.uk/wp-content/uploads/2020/07/parchment-paper-cropped-scaled.jpg");
         background-size: cover;
         background-repeat: repeat;
         background-attachment: fixed;
@@ -354,6 +354,7 @@ with tab6:
             st.write(f"**{codename}**: {score} points")
     else:
         st.write("No participants yet.")
+
 
 
 
