@@ -172,10 +172,10 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 
 # -------------------- HOME TAB --------------------
 with tab1:
-    st.header("🍺 Welcome to the Stag Night App!")
+    st.header("🍺 Welcome to the Stag of one Mr Schofield: Three time Lad of the year🐘🐘🐘")
     home_text = (
         "Welcome to Lüdz! Each participant chooses a codename. "
-        "Remember, Silent Cheers are serious business. 🎯 "
+        "Remember, Silent Cheers are serious business. 🍺 "
         "Lets shank this city and try not to bottle the hobbit"
     )
     st.markdown(home_text)
@@ -185,7 +185,7 @@ with tab1:
     egg_solved = egg_resp.data[0]["solved"] if egg_resp.data else False
 
     if not egg_solved:
-        if st.button("🎯"):  # hidden trigger emoji
+        if st.button("🍺"):  # hidden trigger emoji
             password_input = st.text_input("Enter the secret password")
             if password_input.upper() == "SCHOMILF69":
                 st.success("Easter egg unlocked! You can nominate someone for a Level 3 forfeit.")
@@ -208,7 +208,7 @@ with tab1:
                 else:
                     st.write("No participants yet to nominate.")
     else:
-        st.write("🎯 The Easter egg has already been discovered and used!")
+        st.write("🍺 The Easter egg has already been discovered and used!")
 
 # -------------------- PUB RULES TAB --------------------
 with tab2:
@@ -364,6 +364,7 @@ with tab6:
             st.write(f"**{codename}**: {score} points")
     else:
         st.write("No participants yet.")
+
 
 
 
