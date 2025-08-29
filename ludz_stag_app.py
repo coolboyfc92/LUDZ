@@ -19,27 +19,18 @@ st.markdown(
         background-attachment: fixed;
     }
 
-    /* Main page container */
+    /* Wrap the entire main content */
     .stApp > .main {
+        background-color: rgba(255, 255, 255, 0.8) !important; /* strong white-ish background */
+        color: #000000 !important; /* black text */
         padding: 2rem;
         border-radius: 10px;
+        font-family: 'Almendra', serif !important;
     }
 
     /* Force all text inside main container to black */
-    .stApp .main, 
-    .stApp .main * , 
-    .stApp .main div, 
-    .stApp .main p, 
-    .stApp .main span, 
-    .stApp .main h1, 
-    .stApp .main h2, 
-    .stApp .main h3, 
-    .stApp .main h4, 
-    .stApp .main h5, 
-    .stApp .main h6, 
-    .stApp .main div.stMarkdown {
+    .stApp > .main * {
         color: #000000 !important;
-        font-family: 'Almendra', serif !important;
     }
 
     /* Tab headers container */
@@ -66,7 +57,7 @@ st.markdown(
 
     /* Tab content panels */
     div[role="tabpanel"] {
-        background-color: rgba(255, 255, 255, 0.2) !important; /* semi-transparent white */
+        background-color: rgba(255, 255, 255, 0.2) !important;
         border-radius: 10px;
         padding: 1rem;
         margin-top: 0.5rem;
@@ -74,11 +65,11 @@ st.markdown(
 
     /* Sidebar container */
     .css-1d391kg {
-        background-color: rgba(0, 0, 0, 0.85) !important; /* dark sidebar background */
+        background-color: rgba(0, 0, 0, 0.85) !important;
         padding: 1rem;
         border-radius: 10px;
         font-family: 'Almendra', serif !important;
-        color: #ffffff !important;  /* white text in sidebar */
+        color: #ffffff !important; /* keep sidebar text white */
     }
     </style>
     """,
@@ -363,6 +354,7 @@ with tab6:
             st.write(f"**{codename}**: {score} points")
     else:
         st.write("No participants yet.")
+
 
 
 
