@@ -216,6 +216,8 @@ with tab1:
     else:
         st.write("🍺 The Easter egg has already been discovered and used!")
 
+st.header("🦸‍♂️ No trip is complete without this legend")
+
 # Centered video embed
 st.markdown(
     """
