@@ -218,18 +218,20 @@ with tab1:
 
     st.header("🦸‍♂️ No trip is complete without this legend")
 
-# Centered video embed
-    st.markdown(
-        """
-        <div style="display: flex; justify-content: center; margin-top: 20px;">
-        <iframe width="560" height="315"
-        src="https://www.youtube.com/embed/gxwWUiZ9b9M?si=yc-zy1xCvXpOLtPH"
-        frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen></iframe>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+    # 👇 Use a container to prevent double rendering
+    video_container = st.container()
+    with video_container:
+        st.markdown(
+            """
+            <div style="display: flex; justify-content: center; margin-top: 20px;">
+                <iframe width="560" height="315"
+                src="https://www.youtube.com/embed/gxwWUiZ9b9M?si=yc-zy1xCvXpOLtPH"
+                frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 # -------------------- PUB RULES TAB --------------------
 with tab2:
