@@ -218,7 +218,7 @@ with tab1:
 
     st.header("🦸‍♂️ No trip is complete without this legend")
 
-    # 👇 Use a container to prevent double rendering
+    # Video container to prevent double rendering
     video_container = st.container()
     with video_container:
         st.markdown(
