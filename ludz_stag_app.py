@@ -216,12 +216,12 @@ with tab1:
     else:
         st.write("🍺 The Easter egg has already been discovered and used!")
 
-st.header("🦸‍♂️ No trip is complete without this legend")
+    st.header("🦸‍♂️ No trip is complete without this legend")
 
 # Centered video embed
-st.markdown(
-    """
-    <div style="display: flex; justify-content: center; margin-top: 20px;">
+    st.markdown(
+        """
+        <div style="display: flex; justify-content: center; margin-top: 20px;">
         <iframe width="560" height="315"
         src="https://www.youtube.com/embed/gxwWUiZ9b9M?si=yc-zy1xCvXpOLtPH"
         frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
