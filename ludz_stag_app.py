@@ -233,6 +233,9 @@ with tab1:
             unsafe_allow_html=True
         )
 
+# -------------------- REMOVE THIS DUPLICATE --------------------
+# The previous video embed outside tab1 has been removed
+
 # -------------------- PUB RULES TAB --------------------
 with tab2:
     st.header("📖 Pub Rules")
