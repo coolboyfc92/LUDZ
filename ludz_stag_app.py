@@ -289,21 +289,23 @@ with tab3:
         2: "Lost in Translation: One person orders the next round using mime only.",
         3: "Accent Round: Everyone speaks in the same accent for one drink.",
         4: "The Stag’s Shadow: Copy the groom’s body language for 10 minutes.",
-        5: "Silent Selfie: Take a group photo in silence. Laugh/speak → drink.",
+        5: "Silent Selfie: Take a group photo in silence. Laugh or speak → drink.",
         6: "Cheers in Foreign: Pick a language and use it for the next toast."
     }
 
     if participants:
-        participant_name = st.selectbox("Select Participant", participant_names)
-        if st.button("Roll Dice for Challenge"):
+        if st.button("Use the Randomiser"):
             roll = random.randint(1, 6)
             challenge = dice_challenges[roll]
+            participant = random.choice(participants)
+            participant_name = participant["name"]
+
             st.success(f"🎲 Dice rolled: {roll}")
-            st.info(f"**{participant_name}** must do: {challenge}")
-            pid = next(p["id"] for p in participants if p["name"] == participant_name)
-            add_challenge(pid, challenge)
+            st.info(f"**{participant_name}** has been chosen to do: {challenge}")
+
+            add_challenge(participant["id"], challenge)
     else:
-        st.write("Add participants first to roll challenges.")
+        st.write("Add participants first to use the randomiser.")
 
 # -------------------- FORFEITS TAB --------------------
 with tab4:
