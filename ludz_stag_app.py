@@ -270,18 +270,6 @@ with tab2:
     else:
         st.write("No pubs exist yet. Add one using the sidebar.")
 
-# Centered video embed
-st.markdown(
-    """
-    <div style="display: flex; justify-content: center; margin-top: 20px;">
-        <iframe width="560" height="315"
-        src="https://www.youtube.com/embed/gxwWUiZ9b9M?si=yc-zy1xCvXpOLtPH"
-        frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen></iframe>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
 
 # -------------------- HOURLY CHALLENGES TAB --------------------
 with tab3:
