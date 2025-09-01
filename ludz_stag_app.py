@@ -62,25 +62,29 @@ st.markdown("""
 # -------------------- COUNTDOWN LOGIC --------------------
 uk = pytz.timezone("Europe/London")
 target_time = uk.localize(datetime(2025, 9, 4, 3, 0, 0))
+now = datetime.now(uk)
 
-countdown_container = st.empty()
-while True:
-    now = datetime.now(uk)
-    if now >= target_time:
-        break
-
+if now < target_time:
     remaining = target_time - now
     hours, remainder = divmod(int(remaining.total_seconds()), 3600)
     minutes, seconds = divmod(remainder, 60)
-
-    countdown_container.markdown(f"""
+    
+    st.markdown(f"""
         <div class="countdown-title">⏳ App Locked</div>
         <div class="countdown-timer">{hours:02d}h {minutes:02d}m {seconds:02d}s</div>
         <div class="countdown-title">The fun begins soon...</div>
     """, unsafe_allow_html=True)
 
-    time.sleep(1)
-    st.experimental_rerun()  # auto-refresh every second
+    # Optional auto-refresh every second
+    st.components.v1.html("""
+        <script>
+        setTimeout(function(){
+           window.location.reload(1);
+        }, 1000);
+        </script>
+    """, height=0)
+    
+    st.stop()  # stop all further code until the timer ends
 
 # -------------------- UTILITY FUNCTIONS --------------------
 def get_participants():
