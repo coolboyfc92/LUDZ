@@ -1,29 +1,9 @@
 import streamlit as st
 import random
 import time
-from datetime import datetime, timezone, timedelta
+from datetime import datetime
 import pytz
 from supabase import create_client, Client
-
-# -------------------- COUNTDOWN GATE --------------------
-# Define target time (UK time)
-uk = pytz.timezone("Europe/London")
-target_time = uk.localize(datetime(2025, 9, 4, 3, 0, 0))
-
-# Current time in UK
-now = datetime.now(uk)
-
-# If before launch, show countdown and stop execution
-if now < target_time:
-    st.title("⏳ App Locked")
-    st.subheader("The fun begins soon...")
-    remaining = target_time - now
-    hours, remainder = divmod(int(remaining.total_seconds()), 3600)
-    minutes, seconds = divmod(remainder, 60)
-    st.write(f"App unlocks in: **{hours}h {minutes}m {seconds}s**")
-
-    st.stop()
-# -------------------- END COUNTDOWN GATE --------------------
 
 # -------------------- SUPABASE SETUP --------------------
 SUPABASE_URL = st.secrets["SUPABASE_URL"]
@@ -49,6 +29,26 @@ st.markdown(
         border-radius: 10px;
         font-family: 'Almendra', serif !important;
         color: #000000 !important;
+        min-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Countdown styling */
+    .countdown-title {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+    .countdown-timer {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #b22222;
+        text-align: center;
+        margin-bottom: 1rem;
     }
 
     /* Force text color for common elements inside main */
@@ -60,39 +60,6 @@ st.markdown(
     .stApp > .main h5,
     .stApp > .main h6,
     .stApp > .main div.stMarkdown {
-        color: #000000 !important;
-    }
-
-    /* Tab headers container */
-    div[role="tablist"] {
-        background-color: rgba(255, 255, 255, 0.2) !important;
-        border-radius: 8px;
-        padding: 0.3rem;
-        margin-bottom: 1rem;
-    }
-
-    /* Individual tab buttons */
-    div[role="tab"] {
-        background-color: rgba(255, 255, 255, 0.2) !important;
-        border-radius: 5px;
-        padding: 0.4rem 0.8rem;
-        margin: 0 0.2rem;
-        color: #000000 !important;
-    }
-
-    /* Selected tab */
-    div[role="tab"][aria-selected="true"] {
-        background-color: rgba(255, 255, 255, 0.4) !important;
-        font-weight: bold;
-        color: #000000 !important;
-    }
-
-    /* Tab content panels */
-    div[role="tabpanel"] {
-        background-color: rgba(255, 255, 255, 0.2) !important;
-        border-radius: 10px;
-        padding: 1rem;
-        margin-top: 0.5rem;
         color: #000000 !important;
     }
 
@@ -108,6 +75,35 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+# -------------------- LIVE COUNTDOWN --------------------
+uk = pytz.timezone("Europe/London")
+target_time = uk.localize(datetime(2025, 9, 4, 3, 0, 0))
+
+countdown_container = st.empty()
+
+while True:
+    now = datetime.now(uk)
+    if now >= target_time:
+        break
+
+    remaining = target_time - now
+    hours, remainder = divmod(int(remaining.total_seconds()), 3600)
+    minutes, seconds = divmod(remainder, 60)
+
+    countdown_container.markdown(f"""
+        <div class="countdown-title">⏳ App Locked</div>
+        <div class="countdown-timer">{hours:02d}h {minutes:02d}m {seconds:02d}s</div>
+        <div class="countdown-title">The fun begins soon...</div>
+    """, unsafe_allow_html=True)
+
+    time.sleep(1)
+
+# -------------------- PAGE CONFIG --------------------
+st.set_page_config(page_title="Lüdz – München wird niedergestochen", layout="wide")
+
+# -------------------- REST OF APP --------------------
+# Put your normal app code here (header, sidebar, tabs, etc.)
 
 # -------------------- APP HEADER --------------------
 st.set_page_config(page_title="Lüdz – München wird niedergestochen", layout="wide")
