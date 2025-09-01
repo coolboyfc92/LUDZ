@@ -270,4 +270,101 @@ with tab4:
     st.header("⚔️ Forfeit Randomiser")
     tier1 = {
         "The Whisper of Glass": "Do a shot. The group chooses what.",
-        "Pints Out for Har
+        "Pints Out for Harambe": "Pour your drink out. You stay dry until the next bar.",
+        "The Bitter Swap": "Swap drinks with someone else, even if half-finished.",
+        "The Burden of Coin": "Buy a round for two random people in the group.",
+        "The Tongue of Strangers": "Speak only in German until your next drink arrives. Fail, drink again."
+    }
+    tier2 = {
+        "The Crown of Fools": "Wear a stupid hat, glasses, or accessory the group provides.",
+        "The Shackled Bond": "Be handcuffed (or tied) to another member for 20 minutes.",
+        "The Tangled Path": "Tie your shoelaces together until the next bar.",
+        "The Servant’s Load": "Carry the stag’s shoes in your hands until the next venue.",
+        "The Herald of Kings": "Introduce yourself to the next bartender as 'The King of Bavaria.'",
+        "The High-Five Herald": "Get strangers to high-five you outside the next bar.",
+        "The Voice of the Silver Screen": "Speak only in movie quotes for 10 minutes."
+    }
+    tier3 = {
+        "Trial by Fire": "Eat a ghost pepper or insanely hot wing. No drink for 2 minutes.",
+        "Trial by Water": "Down a pint of water while the group pours more on you.",
+        "Trial by Earth": "Lick something grim but safe (classic: armpit). Outdoors? Eat a handful of grass.",
+        "Trial by Air": "Stand on a chair or table and give a dramatic toast in your best Shakespearean voice."
+    }
+    tiers = {"Tier 1 — Light": tier1, "Tier 2 — Medium": tier2, "Tier 3 — Trials": tier3}
+
+    if participants:
+        participant_name = st.selectbox("Select Participant for Forfeit", participant_names)
+        tier_choice = st.selectbox("Select Tier", list(tiers.keys()))
+        if st.button("Randomise Forfeit"):
+            name, desc = random.choice(list(tiers[tier_choice].items()))
+            st.warning(f"**{participant_name} must do: {name}**")
+            st.info(desc)
+            pid = next(p["id"] for p in participants if p["name"] == participant_name)
+            add_forfeit(pid, f"{name}: {desc}", tier_choice)
+    else:
+        st.write("Add participants first to assign forfeits.")
+
+# -------------------- HISTORY TAB --------------------
+with tab5:
+    st.header("📜 Participant History")
+    if participants:
+        for p in participants:
+            with st.expander(f"{p['codename']} ({p['name']})"):
+                st.markdown("**Forfeits Done:**")
+                forfeits = get_forfeits(p["id"])
+                if forfeits:
+                    for f in forfeits:
+                        parts = f['description'].split(":", 1)
+                        if len(parts) == 2:
+                            title, detail = parts
+                            st.markdown(f"- **{title.strip()}**: {detail.strip()} ({f['tier']})")
+                        else:
+                            st.markdown(f"- {f['description']} ({f['tier']})")
+                else:
+                    st.write("None yet.")
+
+                st.markdown("**Challenges Completed:**")
+                challenges = get_challenges(p["id"])
+                if challenges:
+                    for c in challenges:
+                        st.markdown(f"- {c['description']}")
+                else:
+                    st.write("None yet.")
+    else:
+        st.write("No participants yet.")
+
+# -------------------- LEADERBOARD TAB --------------------
+with tab6:
+    st.header("🏆 Forfeit Leaderboard")
+    if participants:
+        leaderboard = []
+        for p in participants:
+            forfeits = get_forfeits(p["id"])
+            score = 0
+            if forfeits:
+                for f in forfeits:
+                    tier = f['tier']
+                    if "Tier 1" in tier: score += 1
+                    elif "Tier 2" in tier: score += 3
+                    elif "Tier 3" in tier: score += 9
+            leaderboard.append((p['codename'], score))
+        leaderboard.sort(key=lambda x: x[1], reverse=True)
+        for codename, score in leaderboard:
+            st.write(f"**{codename}**: {score} points")
+    else:
+        st.write("No participants yet.")
+
+# -------------------- PUB RULES OVERVIEW TAB --------------------
+with tab7:
+    st.header("📚 Pub Rules Overview")
+    if pubs:
+        for pub in pubs:
+            st.subheader(f"🍺 {pub['pub_name']}")
+            rules = get_pub_rules(pub["id"])
+            if rules:
+                for r in rules:
+                    st.markdown(f"- {r['rule']}")
+            else:
+                st.write("No rules set yet for this pub.")
+    else:
+        st.write("No pubs yet. Add one using the sidebar.")
