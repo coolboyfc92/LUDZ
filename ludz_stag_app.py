@@ -60,7 +60,7 @@ st.markdown("""
 
 # -------------------- COUNTDOWN LOGIC --------------------
 uk = pytz.timezone("Europe/London")
-target_time = uk.localize(datetime(2025, 9, 4, 3, 0, 0))
+target_time = uk.localize(datetime(2025, 9, 1, 3, 0, 0))
 
 now = datetime.now(uk)
 if now < target_time:
