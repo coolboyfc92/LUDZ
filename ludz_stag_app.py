@@ -1,6 +1,29 @@
 import streamlit as st
 import random
+import time
+from datetime import datetime, timezone, timedelta
+import pytz
 from supabase import create_client, Client
+
+# -------------------- COUNTDOWN GATE --------------------
+# Define target time (UK time)
+uk = pytz.timezone("Europe/London")
+target_time = uk.localize(datetime(2025, 9, 4, 3, 0, 0))
+
+# Current time in UK
+now = datetime.now(uk)
+
+# If before launch, show countdown and stop execution
+if now < target_time:
+    st.title("⏳ App Locked")
+    st.subheader("The fun begins soon...")
+    remaining = target_time - now
+    hours, remainder = divmod(int(remaining.total_seconds()), 3600)
+    minutes, seconds = divmod(remainder, 60)
+    st.write(f"App unlocks in: **{hours}h {minutes}m {seconds}s**")
+
+    st.stop()
+# -------------------- END COUNTDOWN GATE --------------------
 
 # -------------------- SUPABASE SETUP --------------------
 SUPABASE_URL = st.secrets["SUPABASE_URL"]
