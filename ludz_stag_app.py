@@ -177,9 +177,11 @@ with tab1:
     )
 
     # Easter egg
-    egg_resp = supabase.table("easter_eggs").select("solved").eq("egg_name", "Level3Forfeit").execute()
-    egg_solved = egg_resp.data[0]["solved"] if egg_resp.data else False
-    if not egg_solved and st.button("🍺"):
+egg_resp = supabase.table("easter_eggs").select("solved").eq("egg_name", "Level3Forfeit").execute()
+egg_solved = egg_resp.data[0]["solved"] if egg_resp.data else False
+
+if not egg_solved:
+    if st.button("🍺"):
         password_input = st.text_input("Enter the secret password")
         if password_input.upper() == "SCHOMILF69":
             st.success("Easter egg unlocked! You can nominate someone for a Level 3 forfeit.")
@@ -199,8 +201,8 @@ with tab1:
                     st.success(f"{chosen} has been nominated!")
             else:
                 st.write("No participants yet to nominate.")
-    else:
-        st.write("🍺 The Easter egg has already been discovered and used!")
+else:
+    st.write("🍺 The Easter egg has already been discovered and used!")
 
     st.header("🍻 Basic Drinking Rules")
 
