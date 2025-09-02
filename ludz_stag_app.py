@@ -207,7 +207,8 @@ with tab1:
 ● No questioning if a Lad skips a round. We are in our 30s. Our livers need a break. Level 1 Forfeit 
 ● Every Stevens left behind. No Forfeit 
 ● Don't be a cunt. Level 2 Forfeit 
-● No fucking about rolling tasks in app if not instructed. Level 2 Forfeit")
+● No fucking about rolling tasks in app if not instructed. Level 2 Forfeit"
+    )
 
     st.header("🦸‍♂️ No trip is complete without this legend")
     st.markdown("""
